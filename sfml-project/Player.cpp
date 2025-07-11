@@ -60,7 +60,7 @@ void Player::Init()
 
 void Player::Release()
 {
-	//need this space to clean things up chooochoooo~
+	// LMJ: need this space to clean things up chooochoooo~
 }
 
 void Player::Reset()
@@ -214,10 +214,25 @@ void Player::GainExperience(int exp)
 
 void Player::LevelUp()
 {
+	level++;
 
+	maxHp += 10;
+	currentHp = maxHp;
+	speed += 5.f;
+
+	// LMJ: Levelup EXP Auto Increase. Needed exp will increase rapidly when level gets high.
+	experienceToNextLevel = static_cast<int>(10 * std::pow(level, 1.5f));
+
+	std::cout << "Level Up! New Level: " << level << std::endl; // LMJ: For debug purpose.
+}
+
+void Player::Heal(int amount)
+{
+	currentHp += amount;
+	if (currentHp > maxHp) currentHp = maxHp;
 }
 
 void Player::Draw(sf::RenderWindow& window)
 {
-
+	window.draw(sprite);
 }
