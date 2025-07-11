@@ -77,8 +77,8 @@ void Player::Reset()
 	invincibleTime = 0.f;
 	facingRight = true;
 
-	animator.Play("animations/idle.csv");
-	currentAnimation = "idle";
+	animator.Play("animations/run.csv");
+	currentAnimation = "run";
 	SetOrigin(Origins::MC);
 }
 
@@ -148,7 +148,7 @@ void Player::HandleInput(float dir)
 	velocity = direction * speed;
 }
 
-void Player::UpdateAnimation()
+void Player::UpdateAnimation() // LMJ: check if this part is only initialized once every time.
 {
 	std::string newAnimation;
 
@@ -158,7 +158,7 @@ void Player::UpdateAnimation()
 	}
 	else
 	{
-		newAnimation = "idle";
+		newAnimation = "run";
 	}
 
 	if (currentAnimation != newAnimation)
@@ -170,17 +170,17 @@ void Player::UpdateAnimation()
 		}
 		else
 		{
-			animator.Play("animations/idle.csv");
+			animator.Play("animations/run.csv");
 		}
 	}
 	
 	if (facingRight)
 	{
-		SetScale(sf::Vector2f(1.f, 1.f));
+		SetScale(sf::Vector2f(-1.f, 1.f));
 	}
 	else
 	{
-		SetScale(sf::Vector2f(-1.f, 1.f));
+		SetScale(sf::Vector2f(1.f, 1.f));
 	}
 }
 

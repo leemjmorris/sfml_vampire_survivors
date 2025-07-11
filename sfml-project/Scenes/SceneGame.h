@@ -14,6 +14,7 @@ protected:
 	TextGo* textExp = nullptr;
 	TextGo* textTimer = nullptr;
 
+	sf::Vector2i  mouse;
 	float gameTimer = 300.f; // LMJ: [BEFORE] 30min -> [NOW] 5min.
 	bool isGameRunning = true;
 

@@ -3,14 +3,14 @@
 #include "Player.h"
 #include "TextGo.h"
 
-SceneGame::SceneGame() : Scene(SceneIds::Dev1) // LMJ: Need to Change l8er. Need to Add SceneIds->SceneGame.
+SceneGame::SceneGame() : Scene(SceneIds::Game) // LMJ: Need to Change l8er. Need to Add SceneIds->SceneGame.
 {
 }
 
 void SceneGame::Init()
 {
 	// LMJ: Need To Change Resource, This is Just For Test Drive Only.
-	texIds.push_back("graphics/sprite_sheet.png");
+	texIds.push_back("graphics/character_sheet_1.png");
 	fontIds.push_back("fonts/DS-DIGIT.ttf"); 
 
 	// LMJ: ONLY FOR TESTING PURPOSE. NEED TO CHANGE WHEN SPRITE AND RESOURCES ARE ADDED!!!!!!!!!
@@ -75,6 +75,10 @@ void SceneGame::Enter()
 	uiView.setCenter(center);
 	worldView.setSize(size);
 	worldView.setCenter(center);
+	
+	//auto windowSize = FRAMEWORK.GetWindowSizeF();
+	//worldView.setSize(windowSize);
+	//worldView.setCenter(windowSize * 0.5f);
 
 	gameTimer = 300.f;
 	isGameRunning = true;
@@ -89,6 +93,12 @@ void SceneGame::Exit()
 
 void SceneGame::Update(float dt)
 {
+	// LMJ: For checking pos with mouse. needed for debug.
+	if (InputMgr::GetMouseButtonDown(sf::Mouse::Left))
+	{
+		mouse = InputMgr::GetMousePosition();
+		std::cout << mouse.x << "," << mouse.y << std::endl;
+	}
 	if (!isGameRunning)
 		return;
 
@@ -121,7 +131,7 @@ void SceneGame::Update(float dt)
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::Escape))
 	{
-		SCENE_MGR.ChangeScene(SceneIds::Dev2);
+		SCENE_MGR.ChangeScene(SceneIds::Game);
 	}
 
 	CheckGameOver();

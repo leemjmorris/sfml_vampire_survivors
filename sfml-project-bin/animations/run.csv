@@ -1,13 +1,8 @@
-﻿ID,FPS,"LoopType (0: Single, 1: Loop)"
-Run,10,1
-
-TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT,"FLIPX (0:Fale, 1:True)"
-graphics/sprite_sheet.png,0,120,120,120,0
-graphics/sprite_sheet.png,120,120,120,120,0
-graphics/sprite_sheet.png,240,120,120,120,0
-graphics/sprite_sheet.png,360,120,120,120,0
-graphics/sprite_sheet.png,480,120,120,120,0
-graphics/sprite_sheet.png,600,120,120,120,0
-graphics/sprite_sheet.png,720,120,120,120,0
-graphics/sprite_sheet.png,840,120,120,120,0
-graphics/sprite_sheet.png,0,240,120,120,0
+﻿ID,FPS,"LoopType (0: Single, 1: Loop)		",,,
+Run,1,"1	",,,
+"				",,,,,
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT,"FLIPX (0:False, 1:True)"
+graphics/character_sheet_1.png,0,0,62,66,0
+graphics/character_sheet_1.png,62,0,62,66,0
+graphics/character_sheet_1.png,0,66,62,66,0
+graphics/character_sheet_1.png,62,66,62,66,0
