@@ -1,0 +1,134 @@
+#include "stdafx.h"
+#include "SceneGame.h"
+#include "Player.h"
+#include "TextGo.h"
+
+SceneGame::SceneGame() : Scene(SceneIds::Dev1) // LMJ: Need to Change l8er. Need to Add SceneIds->SceneGame.
+{
+}
+
+void SceneGame::Init()
+{
+	// LMJ: Need To Change Resource, This is Just For Test Drive Only.
+	texIds.push_back("graphics/sprite_sheet.png");
+	fontIds.push_back("fonts/DS-DIGIT.ttf"); 
+
+	// LMJ: ONLY FOR TESTING PURPOSE. NEED TO CHANGE WHEN SPRITE AND RESOURCES ARE ADDED!!!!!!!!!
+	textHp = new TextGo("fonts/DS-DIGIT.ttf");
+	textHp->SetString("HP: 100/100");
+	textHp->SetCharacterSize(24);
+	textHp->SetFillColor(sf::Color::Red);
+	textHp->sortingLayer = SortingLayers::UI;
+	textHp->sortingOrder = 10;
+	AddGameObject(textHp);
+
+	textLevel = new TextGo("fonts/DS-DIGIT.ttf");
+	textLevel->SetString("Level: 1");
+	textLevel->SetCharacterSize(24);
+	textLevel->SetFillColor(sf::Color::Cyan);
+	textLevel->sortingLayer = SortingLayers::UI;
+	textLevel->sortingOrder = 10;
+	AddGameObject(textLevel);
+
+	textExp = new TextGo("fonts/DS-DIGIT.ttf");
+	textExp->SetString("EXP: 0/100");
+	textExp->SetCharacterSize(24);
+	textExp->SetFillColor(sf::Color::Yellow);
+	textExp->sortingLayer = SortingLayers::UI;
+	textExp->sortingOrder = 10;
+	AddGameObject(textExp);
+
+	textTimer = new TextGo("fonts/DS-DIGIT.ttf");
+	textTimer->SetString("Time: 00:00");
+	textTimer->SetCharacterSize(24);
+	textTimer->SetFillColor(sf::Color::White);
+	textTimer->sortingLayer = SortingLayers::UI;
+	textTimer->sortingOrder = 10;
+	AddGameObject(textTimer);
+
+	player = new Player("GamePlayer");
+	AddGameObject(player);
+
+	TextGo* instructionText = new TextGo("fonts/DS-DIGIT.ttf");
+	instructionText->SetString("WASD: Move | T: Take Damage | G: Gain EXP | H: Heal | ESC: Exit");
+	instructionText->SetCharacterSize(20);
+	instructionText->SetFillColor(sf::Color(128, 128, 128)); // LMJ: Gray setting.
+	instructionText->SetPosition(sf::Vector2f(10.f, FRAMEWORK.GetWindowSizeF().y - 30.f));
+	instructionText->sortingLayer = SortingLayers::UI;
+	instructionText->sortingOrder = 5;
+	AddGameObject(instructionText);
+
+	Scene::Init();
+}
+
+void SceneGame::Enter()
+{
+	auto size = FRAMEWORK.GetWindowSizeF();
+	sf::Vector2f center{ size.x * 0.5f, size.y * 0.5f };
+
+	uiView.setSize(size);
+	uiView.setCenter(center);
+	worldView.setSize(size);
+	worldView.setCenter(center);
+
+	gameTimer = 1800.f;
+	isGameRunning = true;
+
+	Scene::Enter();
+}
+
+void SceneGame::Exit()
+{
+	Scene::Exit();
+}
+
+void SceneGame::Update(float dt)
+{
+	if (!isGameRunning)
+		return;
+
+	Scene::Update(dt);
+
+	UpdateGameTimer(dt);
+	UpdateUI(dt);
+
+	if (player != nullptr)
+	{
+		if (InputMgr::GetKeyDown(sf::Keyboard::T))
+		{
+			player->TakeDamage(20);
+		}
+		if (InputMgr::GetKeyDown(sf::Keyboard::G))
+		{
+			player->GainExperience(50);
+		}
+		if (InputMgr::GetKeyDown(sf::Keyboard::H))
+		{
+			player->Heal(25);
+		}
+	}
+
+	if (InputMgr::GetKeyDown(sf::Keyboard::Escape))
+	{
+		SCENE_MGR.ChangeScene(SceneIds::Dev2);
+	}
+
+	CheckGameOver();
+}
+
+void SceneGame::UpdateGameTimer(float dt)
+{
+}
+
+void SceneGame::UpdateUI(float dt)
+{
+}
+
+void SceneGame::CheckGameOver()
+{
+}
+
+void SceneGame::Draw(sf::RenderWindow& window)
+{
+	Scene::Draw(window);
+}
