@@ -18,6 +18,7 @@ void SceneGame::Init()
 	textHp->SetString("HP: 100/100");
 	textHp->SetCharacterSize(24);
 	textHp->SetFillColor(sf::Color::Red);
+	textHp->SetPosition(sf::Vector2f(20.f, 20.f));
 	textHp->sortingLayer = SortingLayers::UI;
 	textHp->sortingOrder = 10;
 	AddGameObject(textHp);
@@ -26,6 +27,7 @@ void SceneGame::Init()
 	textLevel->SetString("Level: 1");
 	textLevel->SetCharacterSize(24);
 	textLevel->SetFillColor(sf::Color::Cyan);
+	textLevel->SetPosition(sf::Vector2f(20.f, 50.f));
 	textLevel->sortingLayer = SortingLayers::UI;
 	textLevel->sortingOrder = 10;
 	AddGameObject(textLevel);
@@ -34,6 +36,7 @@ void SceneGame::Init()
 	textExp->SetString("EXP: 0/100");
 	textExp->SetCharacterSize(24);
 	textExp->SetFillColor(sf::Color::Yellow);
+	textExp->SetPosition(sf::Vector2f(20.f, 80.f));
 	textExp->sortingLayer = SortingLayers::UI;
 	textExp->sortingOrder = 10;
 	AddGameObject(textExp);
@@ -42,6 +45,8 @@ void SceneGame::Init()
 	textTimer->SetString("Time: 00:00");
 	textTimer->SetCharacterSize(24);
 	textTimer->SetFillColor(sf::Color::White);
+	textTimer->SetOrigin(Origins::TC);
+	textTimer->SetPosition(sf::Vector2f(FRAMEWORK.GetWindowSizeF().x * 0.5f, 20.0f));
 	textTimer->sortingLayer = SortingLayers::UI;
 	textTimer->sortingOrder = 10;
 	AddGameObject(textTimer);
@@ -53,7 +58,7 @@ void SceneGame::Init()
 	instructionText->SetString("WASD: Move | T: Take Damage | G: Gain EXP | H: Heal | ESC: Exit");
 	instructionText->SetCharacterSize(20);
 	instructionText->SetFillColor(sf::Color(128, 128, 128)); // LMJ: Gray setting.
-	instructionText->SetPosition(sf::Vector2f(10.f, FRAMEWORK.GetWindowSizeF().y - 30.f));
+	instructionText->SetPosition(sf::Vector2f(20.f, FRAMEWORK.GetWindowSizeF().y - 30.f));
 	instructionText->sortingLayer = SortingLayers::UI;
 	instructionText->sortingOrder = 5;
 	AddGameObject(instructionText);

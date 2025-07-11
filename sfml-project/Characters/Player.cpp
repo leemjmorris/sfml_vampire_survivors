@@ -166,7 +166,7 @@ void Player::UpdateAnimation()
 		currentAnimation = newAnimation;
 		if (newAnimation == "run")
 		{
-			animator.Play("animaitons/run.csv");
+			animator.Play("animations/run.csv");
 		}
 		else
 		{
