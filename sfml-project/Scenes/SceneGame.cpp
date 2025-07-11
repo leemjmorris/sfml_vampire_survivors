@@ -101,7 +101,10 @@ void SceneGame::Update(float dt)
 	{
 		if (InputMgr::GetKeyDown(sf::Keyboard::T))
 		{
+			int currentHp = player->GetCurrentHp();
 			player->TakeDamage(20);
+			int newHp = player->GetCurrentHp();
+			std::cout << "Take Damage! HP: " << currentHp << " -> " << newHp << std::endl;
 		}
 		if (InputMgr::GetKeyDown(sf::Keyboard::G))
 		{
@@ -109,7 +112,10 @@ void SceneGame::Update(float dt)
 		}
 		if (InputMgr::GetKeyDown(sf::Keyboard::H))
 		{
+			int currentHp = player->GetCurrentHp();
 			player->Heal(25);
+			int newHp = player->GetCurrentHp();
+			std::cout << "HP healed!!! HP: " << currentHp << " -> " << newHp << std::endl;
 		}
 	}
 
@@ -167,8 +173,15 @@ void SceneGame::CheckGameOver()
 		isGameRunning = false;
 		std::cout << "WINNER WINNER CHICKEN DINNER" << std::endl;
 		std::cout << "You survived 05 minutes!" << std::endl;
-		std::cout << "FINAL LEVEL: " << player->GetLevel() << std::endl;
-		std::cout << "FINAL HP: " << player->GetCurrentHp() << "/" << player->GetMaxHp() << std::endl;
+		if (player != nullptr)
+		{
+			std::cout << "FINAL LEVEL: " << player->GetLevel() << std::endl;
+			std::cout << "FINAL HP: " << player->GetCurrentHp() << "/" << player->GetMaxHp() << std::endl;
+		}
+		else
+		{
+			std::cout << "Error, Player Data not found (nullptr, See SceneGame.cpp" << std::endl;
+		}
 		// LMJ: Need to make victory scene to change the scene when player wins. Or, can just use UI Mgr to let a certain UI pop-up when player wins.
 	}
 }
@@ -179,6 +192,7 @@ void SceneGame::UpdateUI(float dt)
 	if (textHp != nullptr)
 	{
 		std::string hpString = "HP: " + std::to_string(player->GetCurrentHp()) + "/" + std::to_string(player->GetMaxHp());
+		textHp->SetString(hpString);
 
 		float hpRatio = (float)player->GetCurrentHp() / (float)player->GetMaxHp();
 		if (hpRatio > 0.5f) textHp->SetFillColor(sf::Color::Green); // LMJ: 50/100 = 0.5f
