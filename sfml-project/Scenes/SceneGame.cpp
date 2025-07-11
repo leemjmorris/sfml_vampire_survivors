@@ -71,7 +71,7 @@ void SceneGame::Enter()
 	worldView.setSize(size);
 	worldView.setCenter(center);
 
-	gameTimer = 1800.f;
+	gameTimer = 300.f;
 	isGameRunning = true;
 
 	Scene::Enter();
@@ -118,6 +118,22 @@ void SceneGame::Update(float dt)
 
 void SceneGame::UpdateGameTimer(float dt)
 {
+	if (!isGameRunning) return;
+
+	gameTimer -= dt;
+
+	if (gameTimer < 0.f) gameTimer = 0.f;
+
+	if (textTimer != nullptr)
+	{
+		int minutes = (int)(gameTimer / 60.f);
+		int seconds = (int)(gameTimer) % 60;
+
+		std::string timeString = "Time: " + std::to_string(minutes) + ":";
+		if (seconds < 10) timeString += "0";
+		
+		timeString += std::to_string(timeString);
+	}
 }
 
 void SceneGame::UpdateUI(float dt)

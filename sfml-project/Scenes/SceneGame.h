@@ -14,7 +14,7 @@ protected:
 	TextGo* textExp = nullptr;
 	TextGo* textTimer = nullptr;
 
-	float gameTimer = 1800.f; // LMJ: 30min.
+	float gameTimer = 300.f; // LMJ: [BEFORE] 30min -> [NOW] 5min.
 	bool isGameRunning = true;
 
 private:
