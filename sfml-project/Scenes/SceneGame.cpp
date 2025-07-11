@@ -129,19 +129,69 @@ void SceneGame::UpdateGameTimer(float dt)
 		int minutes = (int)(gameTimer / 60.f);
 		int seconds = (int)(gameTimer) % 60;
 
-		std::string timeString = "Time: " + std::to_string(minutes) + ":";
+		std::string timeString = "Time: ";
+		if (minutes < 10) timeString += "0";
+		timeString += std::to_string(minutes) + ":";
 		if (seconds < 10) timeString += "0";
+		timeString += std::to_string(seconds);
 		
-		timeString += std::to_string(timeString);
+		textTimer->SetString(timeString);
+
+		if (gameTimer < 60.f) textTimer->SetFillColor(sf::Color::Red);
+		else if (gameTimer < 150.f) textTimer->SetFillColor(sf::Color::Yellow);
+		else textTimer->SetFillColor(sf::Color::White);
+	}
+}
+
+void SceneGame::CheckGameOver()
+{
+	if (!isGameRunning) return;
+
+	// LMJ: Player Dead by low hp
+	if (player != nullptr && player->GetCurrentHp() <= 0)
+	{
+		isGameRunning = false;
+		std::cout << "GAME OVER" << std::endl;
+		std::cout << "PLAYER DEAD" << std::endl;
+		std::cout << "FINAL LEVEL: " << player->GetLevel() << std::endl;
+	}
+
+	// LMJ: Player Survive for 5min.
+	if (gameTimer <= 0.f)
+	{
+		isGameRunning = false;
+		std::cout << "WINNER WINNER CHICKEN DINNER" << std::endl;
+		std::cout << "You survived 05 minutes!" << std::endl;
+		std::cout << "FINAL LEVEL: " << player->GetLevel() << std::endl;
+		std::cout << "FINAL HP: " << player->GetCurrentHp() << "/" << player->GetMaxHp() << std::endl;
+		// LMJ: Need to make victory scene to change the scene when player wins. Or, can just use UI Mgr to let a certain UI pop-up when player wins.
 	}
 }
 
 void SceneGame::UpdateUI(float dt)
 {
-}
+	if (player == nullptr) return;
+	if (textHp != nullptr)
+	{
+		std::string hpString = "HP: " + std::to_string(player->GetCurrentHp()) + "/" + std::to_string(player->GetMaxHp());
 
-void SceneGame::CheckGameOver()
-{
+		float hpRatio = (float)player->GetCurrentHp() / (float)player->GetMaxHp();
+		if (hpRatio > 0.5f) textHp->SetFillColor(sf::Color::Green); // LMJ: 50/100 = 0.5f
+		else if (hpRatio > 0.25f) textHp->SetFillColor(sf::Color::Yellow);
+		else textHp->SetFillColor(sf::Color::Red);
+	}
+
+	if (textLevel != nullptr)
+	{
+		std::string levelString = "Level: " + std::to_string(player->GetLevel());
+		textLevel->SetString(levelString);
+	}
+
+	if (textExp != nullptr)
+	{
+		std::string expString = "EXP: " + std::to_string(player->GetExperience()) + "/" + std::to_string(player->GetExperienceToNext());
+		textExp->SetString(expString);
+	}
 }
 
 void SceneGame::Draw(sf::RenderWindow& window)
