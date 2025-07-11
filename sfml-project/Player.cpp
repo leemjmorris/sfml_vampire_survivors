@@ -71,7 +71,7 @@ void Player::Reset()
 	currentHp = maxHp;
 	level = 1;
 	experience = 0;
-	experienceToNext = 100;
+	experienceToNextLevel = 100;
 	velocity = sf::Vector2f(0.f, 0.f);
 	direction = sf::Vector2f(0.f, 0.f);
 	invincibleTime = 0.f;
@@ -89,7 +89,7 @@ void Player::Update(float dt)
 		invincibleTime -= dt;
 
 		float alpha = (sin(invincibleTime * 20.f) + 1.f) * 0.5f;
-		sprite.setColor(sf::Color(255, 255, 255, (sf::Unit8)(alpha * 255)));
+		sprite.setColor(sf::Color(255, 255, 255, (alpha * 255)));
 	}
 	else
 	{
@@ -131,11 +131,11 @@ void Player::HandleInput(float dir)
 	}
 
 	// LMJ: Moving Up
-	if (InputMgr::GetKey(sf::Keyboard::w) || InputMgr::GetKey(sf::Keyboard::Up))
+	if (InputMgr::GetKey(sf::Keyboard::W) || InputMgr::GetKey(sf::Keyboard::Up))
 	{
 		direction.y -= 1.f;
 	}
-	if (InputMgr::GetKey(sf::Keyboard::s) || InputMgr::GetKey(sf::Keyboard::Down))
+	if (InputMgr::GetKey(sf::Keyboard::S) || InputMgr::GetKey(sf::Keyboard::Down))
 	{
 		direction.y += 1.f;
 	}
@@ -186,14 +186,35 @@ void Player::UpdateAnimation()
 
 void Player::TakeDamage(int damage)
 {
-	if (invincibleTime > 0.f)
-	{
-		return;
-	}
+	if (invincibleTime > 0.f) return;
 
 	currentHp -= damage;
 	if (currentHp < 0) currentHp = 0;
-	if (currentHp <= 0) std::cout << "Player Dead!" << std::endl;
+	
+	invincibleTime = invincibleDuration;
+	sprite.setColor(sf::Color::Red);
+
+	// LMJ: Put Game Over Function HERE!!!!
+	if (currentHp <= 0)
+	{
+		std::cout << "Player Dead!" << std::endl;
+	}
+}
+
+void Player::GainExperience(int exp)
+{
+	experience += exp;
+
+	while (experience >= experienceToNextLevel) // LMJ: Level UP Method needed
+	{
+		experience -= experienceToNextLevel;
+		LevelUp();
+	}
+}
+
+void Player::LevelUp()
+{
+
 }
 
 void Player::Draw(sf::RenderWindow& window)

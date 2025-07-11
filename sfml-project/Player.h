@@ -16,7 +16,7 @@ protected:
     int currentHp = 100;
     int level = 1;
     int experience = 0;
-    int experienceToNext = 100;
+    int experienceToNextLevel = 100;
 
     std::string currentAnimation = "idle";
     bool facingRight = true;
@@ -53,7 +53,7 @@ public:
     int GetMaxHp() const { return maxHp; }
     int GetLevel() const { return level; }
     int GetExperience() const { return experience; }
-    int GetExperienceToNext() const { return experienceToNext; }
+    int GetExperienceToNext() const { return experienceToNextLevel; }
     bool IsInvincible() const { return invincibleTime > 0.f; }
 
     void SetSpeed(float newSpeed) { speed = newSpeed; }

@@ -26,18 +26,6 @@ void Enemy::TakeDamage(int damage)
 {
 }
 
-void Player::GainExperience(int exp)
-{
-}
-
-void Player::LevelUp()
-{
-}
-
-void Player::Heal(int amount)
-{
-}
-
 void Enemy::FollowPlayer(Player* player)
 {
 }
