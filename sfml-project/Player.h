@@ -42,7 +42,7 @@ public:
     void Draw(sf::RenderWindow& window) override;
     
     void HandleInput(float dir);
-    void UpdateAnimaiton();
+    void UpdateAnimation();
     void TakeDamage(int damage);
     void GainExperience(int exp);
     void LevelUp();
