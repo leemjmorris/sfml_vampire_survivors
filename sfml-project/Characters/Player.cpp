@@ -112,6 +112,8 @@ void Player::Update(float dt)
 	SetPosition(position);
 
 	UpdateAnimation();
+
+	animator.Update(dt);
 }
 
 void Player::HandleInput(float dir)
@@ -158,7 +160,7 @@ void Player::UpdateAnimation() // LMJ: check if this part is only initialized on
 	}
 	else
 	{
-		newAnimation = "run";
+		newAnimation = "idle";
 	}
 
 	if (currentAnimation != newAnimation)
@@ -170,7 +172,7 @@ void Player::UpdateAnimation() // LMJ: check if this part is only initialized on
 		}
 		else
 		{
-			animator.Play("animations/run.csv");
+			animator.Play("animations/idle.csv");
 		}
 	}
 	

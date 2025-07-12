@@ -1,5 +1,5 @@
-﻿ID,FPS,"LoopType (0: Single, 1: Loop)		",,,
-Run,1,"1	",,,
+ID,FPS,"LoopType (0: Single, 1: Loop)		",,,
+Run,10,"1	",,,
 "				",,,,,
 TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT,"FLIPX (0:False, 1:True)"
 graphics/character_sheet_1.png,0,0,62,66,0
