@@ -143,7 +143,6 @@
     <ClCompile Include="Characters\Enemy.cpp" />
     <ClCompile Include="Framework\AnimationClip.cpp" />
     <ClCompile Include="Framework\Animator.cpp" />
-    <ClCompile Include="AniPlayer.cpp" />
     <ClCompile Include="Framework\Framework.cpp" />
     <ClCompile Include="Framework\GameObject.cpp" />
     <ClCompile Include="Framework\HitBox.cpp" />
@@ -153,8 +152,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Characters\Player.cpp" />
     <ClCompile Include="Scenes\SceneGame.cpp" />
-    <ClCompile Include="Scenes\SceneDev1.cpp" />
-    <ClCompile Include="Scenes\SceneDev2.cpp" />
     <ClCompile Include="Framework\SceneMgr.cpp" />
     <ClCompile Include="Framework\SoundMgr.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -168,7 +165,6 @@
     <ClInclude Include="Characters\Enemy.h" />
     <ClInclude Include="Framework\AnimationClip.h" />
     <ClInclude Include="Framework\Animator.h" />
-    <ClInclude Include="AniPlayer.h" />
     <ClInclude Include="Framework\Framework.h" />
     <ClInclude Include="Framework\Defines.h" />
     <ClInclude Include="Framework\GameObject.h" />

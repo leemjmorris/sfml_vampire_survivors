@@ -56,9 +56,6 @@ void Player::Init()
 
 	ANI_CLIP_MGR.Load("animations/run.csv");
 	animator.Play("animations/run.csv");
-
-	std::cout << "Player initialized with run animation. checking for debugs" << std::endl;
-
 }
 
 void Player::Release()
@@ -87,7 +84,7 @@ void Player::Reset()
 	sf::Vector2f centerPos = sf::Vector2f(windowSize.x * 0.5f, windowSize.y * 0.5f);
 	SetPosition(centerPos);
 
-	if (TEXTURE_MGR.Exists("graphics/character_sheet_1.png"))
+	if (TEXTURE_MGR.Exists("graphics/sprite_run.png"))
 	{
 		animator.Play("animations/run.csv");
 	}	
@@ -163,8 +160,6 @@ void Player::HandleInput(float dir)
 
 void Player::UpdateAnimation() // LMJ: check if this part is only initialized once every time.
 {
-	std::string newAnimation;
-
 	if (direction.x != 0.f || direction.y != 0.f)
 	{
 		animator.SetSpeed(1.0f);

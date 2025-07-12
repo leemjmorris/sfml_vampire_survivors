@@ -10,7 +10,7 @@ SceneGame::SceneGame() : Scene(SceneIds::Game) // LMJ: Need to Change l8er. Need
 void SceneGame::Init()
 {
 	// LMJ: Need To Change Resource, This is Just For Test Drive Only.
-	texIds.push_back("graphics/character_sheet_1.png");
+	texIds.push_back("graphics/sprite_run.png");
 	fontIds.push_back("fonts/DS-DIGIT.ttf"); 
 
 	// LMJ: ONLY FOR TESTING PURPOSE. NEED TO CHANGE WHEN SPRITE AND RESOURCES ARE ADDED!!!!!!!!!

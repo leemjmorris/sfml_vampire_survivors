@@ -39,12 +39,6 @@
     <ClCompile Include="Framework\SceneMgr.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Scenes\SceneDev1.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Scenes\SceneDev2.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Framework\Framework.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -64,9 +58,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Framework\Animator.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="AniPlayer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Characters\Player.cpp">
@@ -138,9 +129,6 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Framework\Animator.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="AniPlayer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Characters\Player.h">

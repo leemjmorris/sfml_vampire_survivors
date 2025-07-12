@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "SceneMgr.h"
 #include "SceneGame.h"
-#include "SceneDev1.h"
-#include "SceneDev2.h"
+//#include "SceneDev1.h"
+//#include "SceneDev2.h"
 
 void SceneMgr::Init()
 {
-	scenes.push_back(new SceneDev1());
-	scenes.push_back(new SceneDev2());
+	//scenes.push_back(new SceneDev1());
+	//scenes.push_back(new SceneDev2());
 	scenes.push_back(new SceneGame());
 
 	for (auto scene : scenes)
