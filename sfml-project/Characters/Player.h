@@ -18,7 +18,6 @@ protected:
     int experience = 0;
     int experienceToNextLevel = 100;
 
-    std::string currentAnimation = "idle";
     bool facingRight = true;
 
     float invincibleTime = 0.f;

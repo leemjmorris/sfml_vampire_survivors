@@ -54,8 +54,8 @@ void Player::Init()
 {
 	animator.SetTarget(&sprite);
 
-	ANI_CLIP_MGR.Load("animations/idle.csv");
 	ANI_CLIP_MGR.Load("animations/run.csv");
+	animator.Play("animations/run.csv");
 }
 
 void Player::Release()
@@ -77,8 +77,6 @@ void Player::Reset()
 	invincibleTime = 0.f;
 	facingRight = true;
 
-	animator.Play("animations/run.csv");
-	currentAnimation = "run";
 	SetOrigin(Origins::MC);
 }
 
@@ -156,24 +154,11 @@ void Player::UpdateAnimation() // LMJ: check if this part is only initialized on
 
 	if (direction.x != 0.f || direction.y != 0.f)
 	{
-		newAnimation = "run";
+		animator.SetSpeed(1.0f);
 	}
 	else
 	{
-		newAnimation = "idle";
-	}
-
-	if (currentAnimation != newAnimation)
-	{
-		currentAnimation = newAnimation;
-		if (newAnimation == "run")
-		{
-			animator.Play("animations/run.csv");
-		}
-		else
-		{
-			animator.Play("animations/idle.csv");
-		}
+		animator.SetSpeed(0.f);
 	}
 	
 	if (facingRight)
