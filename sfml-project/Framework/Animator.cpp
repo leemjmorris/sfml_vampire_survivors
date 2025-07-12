@@ -103,5 +103,4 @@ void Animator::SetFrame(const AnimationFrame& frame)
 {
 	sprite->setTexture(TEXTURE_MGR.Get(frame.texId));	
 	sprite->setTextureRect(frame.texCoord);
-	//sprite->
 }

@@ -55,7 +55,6 @@ void Player::Init()
 	animator.SetTarget(&sprite);
 
 	ANI_CLIP_MGR.Load("animations/run.csv");
-	animator.Play("animations/run.csv");
 }
 
 void Player::Release()
@@ -169,6 +168,8 @@ void Player::UpdateAnimation() // LMJ: check if this part is only initialized on
 		animator.SetSpeed(0.f);
 	}
 	
+	sf::Vector2f currentPos = GetPosition();
+
 	if (facingRight)
 	{
 		SetScale(sf::Vector2f(-1.f, 1.f));
@@ -177,6 +178,8 @@ void Player::UpdateAnimation() // LMJ: check if this part is only initialized on
 	{
 		SetScale(sf::Vector2f(1.f, 1.f));
 	}
+	Utils::SetOrigin(sprite, Origins::MC);
+	sprite.setPosition(currentPos);
 }
 
 void Player::TakeDamage(int damage)
