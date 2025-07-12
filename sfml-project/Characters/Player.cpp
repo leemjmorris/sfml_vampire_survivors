@@ -56,6 +56,9 @@ void Player::Init()
 
 	ANI_CLIP_MGR.Load("animations/run.csv");
 	animator.Play("animations/run.csv");
+
+	std::cout << "Player initialized with run animation. checking for debugs" << std::endl;
+
 }
 
 void Player::Release()
@@ -78,6 +81,16 @@ void Player::Reset()
 	facingRight = true;
 
 	SetOrigin(Origins::MC);
+
+	// LMJ: Player spawn in center of display.
+	sf::Vector2f windowSize = FRAMEWORK.GetWindowSizeF();
+	sf::Vector2f centerPos = sf::Vector2f(windowSize.x * 0.5f, windowSize.y * 0.5f);
+	SetPosition(centerPos);
+
+	if (TEXTURE_MGR.Exists("graphics/character_sheet_1.png"))
+	{
+		animator.Play("animations/run.csv");
+	}	
 }
 
 void Player::Update(float dt)

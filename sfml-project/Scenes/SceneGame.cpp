@@ -50,7 +50,7 @@ void SceneGame::Init()
 	textTimer->sortingLayer = SortingLayers::UI;
 	textTimer->sortingOrder = 10;
 	AddGameObject(textTimer);
-
+	
 	player = new Player("GamePlayer");
 	AddGameObject(player);
 
@@ -99,16 +99,18 @@ void SceneGame::Update(float dt)
 		mouse = InputMgr::GetMousePosition();
 		std::cout << mouse.x << "," << mouse.y << std::endl;
 	}
+
+
 	if (!isGameRunning)
 		return;
 
 	Scene::Update(dt);
 
-	UpdateGameTimer(dt);
-	UpdateUI(dt);
-
 	if (player != nullptr)
 	{
+		sf::Vector2f playerPos = player->GetPosition();
+		worldView.setCenter(playerPos);
+
 		if (InputMgr::GetKeyDown(sf::Keyboard::T))
 		{
 			int currentHp = player->GetCurrentHp();
@@ -128,6 +130,9 @@ void SceneGame::Update(float dt)
 			std::cout << "HP healed!!! HP: " << currentHp << " -> " << newHp << std::endl;
 		}
 	}
+
+	UpdateGameTimer(dt);
+	UpdateUI(dt);
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::Escape))
 	{
