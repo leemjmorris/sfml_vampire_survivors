@@ -2,6 +2,7 @@
 #include "SceneGame.h"
 #include "Player.h"
 #include "TextGo.h"
+#include "TiledMap.h"
 
 SceneGame::SceneGame() : Scene(SceneIds::Game) // LMJ: Need to Change l8er. Need to Add SceneIds->SceneGame.
 {
@@ -9,10 +10,16 @@ SceneGame::SceneGame() : Scene(SceneIds::Game) // LMJ: Need to Change l8er. Need
 
 void SceneGame::Init()
 {
+	// LMJ: Add background texture for tiled map
+	texIds.push_back("graphics/background_forest.png");
 	// LMJ: Need To Change Resource, This is Just For Test Drive Only.
 	texIds.push_back("graphics/sprite_run.png");
 	texIds.push_back("graphics/sprite_death.png");
-	fontIds.push_back("fonts/DS-DIGIT.ttf"); 
+	fontIds.push_back("fonts/DS-DIGIT.ttf");
+
+	// LMJ: Create tiled map
+	tiledMap = new TiledMap("graphics/background_forest.png", "ForestMap");
+	AddGameObject(tiledMap);
 
 	// LMJ: ONLY FOR TESTING PURPOSE. NEED TO CHANGE WHEN SPRITE AND RESOURCES ARE ADDED!!!!!!!!!
 	textHp = new TextGo("fonts/DS-DIGIT.ttf");
@@ -51,7 +58,7 @@ void SceneGame::Init()
 	textTimer->sortingLayer = SortingLayers::UI;
 	textTimer->sortingOrder = 10;
 	AddGameObject(textTimer);
-	
+
 	player = new Player("GamePlayer");
 	AddGameObject(player);
 
@@ -76,13 +83,21 @@ void SceneGame::Enter()
 	uiView.setCenter(center);
 	worldView.setSize(size);
 	worldView.setCenter(center);
-	
-	//auto windowSize = FRAMEWORK.GetWindowSizeF();
-	//worldView.setSize(windowSize);
-	//worldView.setCenter(windowSize * 0.5f);
 
 	gameTimer = 300.f;
 	isGameRunning = true;
+
+	// LMJ: Set up player-map relationship after both are initialized
+	if (player != nullptr && tiledMap != nullptr)
+	{
+		player->SetCurrentMap(tiledMap);
+
+		// LMJ: Get map size for camera boundary calculations
+		mapBounds = tiledMap->GetMapBounds();
+
+		std::cout << "Map bounds set: " << mapBounds.left << ", " << mapBounds.top
+			<< ", " << mapBounds.width << ", " << mapBounds.height << std::endl;
+	}
 
 	Scene::Enter();
 }
@@ -101,7 +116,6 @@ void SceneGame::Update(float dt)
 		std::cout << mouse.x << "," << mouse.y << std::endl;
 	}
 
-
 	if (!isGameRunning)
 		return;
 
@@ -110,7 +124,9 @@ void SceneGame::Update(float dt)
 	if (player != nullptr)
 	{
 		sf::Vector2f playerPos = player->GetPosition();
-		worldView.setCenter(playerPos);
+
+		// LMJ: Update camera to follow player with map boundary constraints
+		UpdateCameraWithBounds(playerPos);
 
 		if (InputMgr::GetKeyDown(sf::Keyboard::T))
 		{
@@ -143,6 +159,35 @@ void SceneGame::Update(float dt)
 	CheckGameOver();
 }
 
+void SceneGame::UpdateCameraWithBounds(const sf::Vector2f& playerPos)
+{
+	// LMJ: Get current view size
+	sf::Vector2f viewSize = worldView.getSize();
+	sf::Vector2f halfViewSize = viewSize * 0.5f;
+
+	// LMJ: Calculate desired camera center (player position)
+	sf::Vector2f desiredCenter = playerPos;
+
+	// LMJ: Clamp camera center to keep view within map bounds
+	if (mapBounds.width > 0 && mapBounds.height > 0)
+	{
+		// LMJ: Clamp X coordinate
+		if (desiredCenter.x - halfViewSize.x < mapBounds.left)
+			desiredCenter.x = mapBounds.left + halfViewSize.x;
+		else if (desiredCenter.x + halfViewSize.x > mapBounds.left + mapBounds.width)
+			desiredCenter.x = mapBounds.left + mapBounds.width - halfViewSize.x;
+
+		// LMJ: Clamp Y coordinate
+		if (desiredCenter.y - halfViewSize.y < mapBounds.top)
+			desiredCenter.y = mapBounds.top + halfViewSize.y;
+		else if (desiredCenter.y + halfViewSize.y > mapBounds.top + mapBounds.height)
+			desiredCenter.y = mapBounds.top + mapBounds.height - halfViewSize.y;
+	}
+
+	// LMJ: Set the clamped camera center
+	worldView.setCenter(desiredCenter);
+}
+
 void SceneGame::UpdateGameTimer(float dt)
 {
 	if (!isGameRunning) return;
@@ -161,7 +206,7 @@ void SceneGame::UpdateGameTimer(float dt)
 		timeString += std::to_string(minutes) + ":";
 		if (seconds < 10) timeString += "0";
 		timeString += std::to_string(seconds);
-		
+
 		textTimer->SetString(timeString);
 
 		if (gameTimer < 60.f) textTimer->SetFillColor(sf::Color::Red);

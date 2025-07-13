@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Player.h"
 #include "Enemy.h"
+#include "TiledMap.h"
 
 Player::Player(const std::string& name)
 {
@@ -89,7 +90,7 @@ void Player::Reset()
 	if (TEXTURE_MGR.Exists("graphics/sprite_run.png"))
 	{
 		animator.Play("animations/run.csv");
-	}	
+	}
 }
 
 void Player::Update(float dt)
@@ -111,19 +112,47 @@ void Player::Update(float dt)
 	position += velocity * dt;
 	SetPosition(position);
 
-	sf::Vector2f windowSize = FRAMEWORK.GetWindowSizeF();
-	sf::FloatRect bounds = GetGlobalBounds();
+	// LMJ: Check map boundaries (only use map boundaries if map exists)
+	if (currentMap != nullptr)
+	{
+		CheckMapBoundaries();
+	}
+	else
+	{
+		// LMJ: Fallback to window boundary check if no map is set
+		sf::Vector2f windowSize = FRAMEWORK.GetWindowSizeF();
+		sf::FloatRect bounds = GetGlobalBounds();
 
-	if (position.x - bounds.width * 0.5f < 0) position.x = bounds.width * 0.5f;
-	if (position.x + bounds.width * 0.5f > windowSize.x) position.x = windowSize.x - bounds.width * 0.5f;
-	if (position.y - bounds.height * 0.5f < 0) position.y = bounds.height * 0.5f;
-	if (position.y + bounds.height * 0.5f > windowSize.y) position.y = windowSize.y - bounds.height * 0.5f;
+		if (position.x - bounds.width * 0.5f < 0) position.x = bounds.width * 0.5f;
+		if (position.x + bounds.width * 0.5f > windowSize.x) position.x = windowSize.x - bounds.width * 0.5f;
+		if (position.y - bounds.height * 0.5f < 0) position.y = bounds.height * 0.5f;
+		if (position.y + bounds.height * 0.5f > windowSize.y) position.y = windowSize.y - bounds.height * 0.5f;
 
-	SetPosition(position);
+		SetPosition(position);
+	}
 
 	UpdateAnimation();
 
 	animator.Update(dt);
+}
+
+void Player::CheckMapBoundaries()
+{
+	// LMJ: If map is set, check boundaries and clamp position
+	if (currentMap != nullptr)
+	{
+		sf::Vector2f clampedPos = currentMap->ClampToMapBounds(position, playerRadius);
+
+		// LMJ: Only update position if it was actually clamped
+		if (clampedPos != position)
+		{
+			position = clampedPos;
+			SetPosition(position);
+
+			// LMJ: Remove debug output for better performance
+			// std::cout << "Player hit boundary!" << std::endl;
+		}
+	}
 }
 
 void Player::HandleInput(float dir)
@@ -213,7 +242,7 @@ void Player::TakeDamage(int damage)
 
 		animator.AddEvent("animations/death.csv", 14, [this]() {
 			OnDeathAnimationComplete();
-		});
+			});
 
 		animator.Play("animations/death.csv");
 		std::cout << "Player Dead!" << std::endl;

@@ -2,6 +2,8 @@
 #include "GameObject.h"
 #include "Animator.h"
 
+class TiledMap;
+
 class Player :  public GameObject
 {
 protected:
@@ -24,6 +26,10 @@ protected:
 
     float invincibleTime = 0.f;
     float invincibleDuration = 0.f;
+
+    TiledMap* currentMap = nullptr; // LMJ: Map boundary checking
+    float playerRadius = 32.0f; // LMJ: Half of player sprite size for collision
+
 public:
     Player(const std::string& name = "Player");
     ~Player() = default;
@@ -48,6 +54,10 @@ public:
     void GainExperience(int exp);
     void LevelUp();
     void Heal(int amount);
+
+        // LMJ: Map boundary methods
+    void SetCurrentMap(TiledMap* map) { currentMap = map; }
+    void CheckMapBoundaries();
 
     sf::Vector2f GetVelocity() const { return velocity; }
     int GetCurrentHp() const { return currentHp; }
