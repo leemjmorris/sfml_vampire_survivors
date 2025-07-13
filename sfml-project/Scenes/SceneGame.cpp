@@ -11,6 +11,7 @@ void SceneGame::Init()
 {
 	// LMJ: Need To Change Resource, This is Just For Test Drive Only.
 	texIds.push_back("graphics/sprite_run.png");
+	texIds.push_back("graphics/sprite_death.png");
 	fontIds.push_back("fonts/DS-DIGIT.ttf"); 
 
 	// LMJ: ONLY FOR TESTING PURPOSE. NEED TO CHANGE WHEN SPRITE AND RESOURCES ARE ADDED!!!!!!!!!
@@ -174,7 +175,7 @@ void SceneGame::CheckGameOver()
 	if (!isGameRunning) return;
 
 	// LMJ: Player Dead by low hp
-	if (player != nullptr && player->GetCurrentHp() <= 0)
+	if (player != nullptr && player->GetCurrentHp() <= 0 && player->IsDeathAnimationFinished())
 	{
 		isGameRunning = false;
 		std::cout << "GAME OVER" << std::endl;

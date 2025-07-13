@@ -19,6 +19,8 @@ protected:
     int experienceToNextLevel = 100;
 
     bool facingRight = true;
+    bool isDead = false;
+    bool deathAnimationFinished = false;
 
     float invincibleTime = 0.f;
     float invincibleDuration = 0.f;
@@ -53,8 +55,12 @@ public:
     int GetLevel() const { return level; }
     int GetExperience() const { return experience; }
     int GetExperienceToNext() const { return experienceToNextLevel; }
+    
     bool IsInvincible() const { return invincibleTime > 0.f; }
+    bool IsDead() const { return isDead; }
+    bool IsDeathAnimationFinished() const { return deathAnimationFinished; }
 
+    void OnDeathAnimationComplete() { deathAnimationFinished = true; }
     void SetSpeed(float newSpeed) { speed = newSpeed; }
     void SetMaxHp(int newMaxHp) { maxHp = newMaxHp; }
 };

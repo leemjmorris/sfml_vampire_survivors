@@ -55,6 +55,7 @@ void Player::Init()
 	animator.SetTarget(&sprite);
 
 	ANI_CLIP_MGR.Load("animations/run.csv");
+	ANI_CLIP_MGR.Load("animations/death.csv");
 }
 
 void Player::Release()
@@ -75,6 +76,8 @@ void Player::Reset()
 	direction = sf::Vector2f(0.f, 0.f);
 	invincibleTime = 0.f;
 	facingRight = true;
+	isDead = false;
+	deathAnimationFinished = false;
 
 	SetOrigin(Origins::MC);
 
@@ -159,6 +162,16 @@ void Player::HandleInput(float dir)
 
 void Player::UpdateAnimation() // LMJ: check if this part is only initialized once every time.
 {
+	if (isDead)
+	{
+		if (!deathAnimationFinished)
+		{
+			animator.SetSpeed(1.0f);
+			return;
+		}
+		return;
+	}
+
 	if (direction.x != 0.f || direction.y != 0.f)
 	{
 		animator.SetSpeed(1.0f);
@@ -184,7 +197,7 @@ void Player::UpdateAnimation() // LMJ: check if this part is only initialized on
 
 void Player::TakeDamage(int damage)
 {
-	if (invincibleTime > 0.f) return;
+	if (invincibleTime > 0.f || isDead) return;
 
 	currentHp -= damage;
 	if (currentHp < 0) currentHp = 0;
@@ -195,6 +208,11 @@ void Player::TakeDamage(int damage)
 	// LMJ: Put Game Over Function HERE!!!!
 	if (currentHp <= 0)
 	{
+		isDead = true;
+		animator.AddEvent("animations/death.csv", 14, [this]() {
+			OnDeathAnimationComplete();
+			});
+		animator.Play("animations/death.csv");
 		std::cout << "Player Dead!" << std::endl;
 	}
 }
