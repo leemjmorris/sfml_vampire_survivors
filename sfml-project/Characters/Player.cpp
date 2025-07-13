@@ -160,14 +160,13 @@ void Player::HandleInput(float dir)
 	velocity = direction * speed;
 }
 
-void Player::UpdateAnimation() // LMJ: check if this part is only initialized once every time.
+void Player::UpdateAnimation()
 {
 	if (isDead)
 	{
 		if (!deathAnimationFinished)
 		{
 			animator.SetSpeed(1.0f);
-			return;
 		}
 		return;
 	}
@@ -180,7 +179,7 @@ void Player::UpdateAnimation() // LMJ: check if this part is only initialized on
 	{
 		animator.SetSpeed(0.f);
 	}
-	
+
 	sf::Vector2f currentPos = GetPosition();
 
 	if (facingRight)
@@ -201,7 +200,7 @@ void Player::TakeDamage(int damage)
 
 	currentHp -= damage;
 	if (currentHp < 0) currentHp = 0;
-	
+
 	invincibleTime = invincibleDuration;
 	sprite.setColor(sf::Color::Red);
 
@@ -209,9 +208,13 @@ void Player::TakeDamage(int damage)
 	if (currentHp <= 0)
 	{
 		isDead = true;
+
+		sprite.setColor(sf::Color::White);
+
 		animator.AddEvent("animations/death.csv", 14, [this]() {
 			OnDeathAnimationComplete();
-			});
+		});
+
 		animator.Play("animations/death.csv");
 		std::cout << "Player Dead!" << std::endl;
 	}
