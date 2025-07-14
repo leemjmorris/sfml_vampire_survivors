@@ -148,9 +148,6 @@ void Player::CheckMapBoundaries()
 		{
 			position = clampedPos;
 			SetPosition(position);
-
-			// LMJ: Remove debug output for better performance
-			// std::cout << "Player hit boundary!" << std::endl;
 		}
 	}
 }
@@ -197,12 +194,28 @@ void Player::UpdateAnimation()
 		{
 			animator.SetSpeed(1.0f);
 		}
-		return;
+		// LMJ: trying to fix this part
+		else if (deathAnimationFinished)
+		{
+			animator.SetSpeed(0.f);
+		}
 	}
 
 	if (direction.x != 0.f || direction.y != 0.f)
 	{
 		animator.SetSpeed(1.f);
+	}
+	// LMJ: Trying to fix this part.
+	else if (direction.x == 0.f || direction.y == 0.f)
+	{
+		if (isDead == false)
+		{
+			animator.SetSpeed(0.f);
+		}
+		else
+		{
+			animator.SetSpeed(1.f);
+		}
 	}
 	 // LMJ: have to fix this part. it iterrupts death animations.
 	/*else if (isDead == false)

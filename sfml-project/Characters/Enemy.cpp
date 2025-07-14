@@ -7,6 +7,9 @@
 void Enemy::Init()
 {
 	animator.SetTarget(&sprite);
+
+	ANI_CLIP_MGR.Load("animations/bat1_run.csv");
+	ANI_CLIP_MGR.Load("animations/bat1_death.csv");
 }
 
 void Enemy::Release()
@@ -16,7 +19,7 @@ void Enemy::Release()
 void Enemy::Reset()
 {
 	sortingLayer = SortingLayers::Foreground;
-	sortingOrder = 5;
+	sortingOrder = 15;
 
 	// LMJ: Will this affect all the other monsters? I think so... Test this part when we add another monsters.
 	speed = 100.f;
@@ -31,10 +34,10 @@ void Enemy::Reset()
 	SetPosition(sf::Vector2f(windowSize.x * 0.3f, windowSize.y * 0.3f));
 
 	// LMJ: Runtime Error. Check This Part!!!!!
-	//if (TEXTURE_MGR.Exists("graphics/sprite_bat1_run.png"))
-	//{
-	//	animator.Play("animations/bat1_run.csv");
-	//}
+	if (TEXTURE_MGR.Exists("graphics/sprite_bat1_run.png"))
+	{
+		animator.Play("animations/bat1_run.csv");
+	}
 }
 
 void Enemy::Update(float dt)

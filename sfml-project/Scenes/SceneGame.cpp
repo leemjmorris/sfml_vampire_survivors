@@ -159,6 +159,17 @@ void SceneGame::Update(float dt)
 			int newHp = player->GetCurrentHp();
 			std::cout << "HP healed!!! HP: " << currentHp << " -> " << newHp << std::endl;
 		}
+		if (InputMgr::GetKeyDown(sf::Keyboard::K))
+		{
+			if (testEnemy != nullptr && testEnemy->GetActive() && !testEnemy->IsDead())
+			{
+				testEnemy->TakeDamage(25);
+				if (testEnemy->GetEnemyHp() <= 0)
+				{
+					player->GainExperience(testEnemy->GetExpValue());
+				}
+			}
+		}
 	}
 
 	UpdateGameTimer(dt);
