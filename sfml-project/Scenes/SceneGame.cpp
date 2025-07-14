@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "TextGo.h"
 #include "TiledMap.h"
+#include "WeaponMgr.h"
 
 SceneGame::SceneGame() : Scene(SceneIds::Game) // LMJ: Need to Change l8er. Need to Add SceneIds->Game.
 {
@@ -14,6 +15,7 @@ void SceneGame::Init()
 	// LMJ: Player sprite section
 	texIds.push_back("graphics/sprite_run.png");
 	texIds.push_back("graphics/sprite_death.png");
+	texIds.push_back("graphics/Knife.png");
 
 	// LMJ: Enemy sprite section
 	texIds.push_back("graphics/sprite_bat1_run.png");
@@ -67,14 +69,29 @@ void SceneGame::Init()
 	player = new Player("GamePlayer");
 	AddGameObject(player);
 
+	// LMJ: Weapon set
+	weaponManager = new WeaponMgr("WeaponManager");
+	weaponManager->SetOwner(player);
+	weaponManager->SetScene(this);
+	AddGameObject(weaponManager);
+
+	player->SetWeaponManager(weaponManager);
+
+	// LMJ: Add Weapon
+	weaponManager->AddWeapon(WeaponType::Knife);
+	std::cout << "=== WEAPON DEBUG ===" << std::endl;
+	std::cout << "Weapon count: " << weaponManager->GetWeaponCount() << std::endl;
+	std::cout << "Has knife: " << weaponManager->HasWeapon(WeaponType::Knife) << std::endl;
+
 	// LMJ: Enemy for TESTING.
 	testEnemy = new Enemy("TestEnemy");
 	AddGameObject(testEnemy);
 
+
 	TextGo* instructionText = new TextGo("fonts/DS-DIGIT.ttf");
-	instructionText->SetString("WASD: Move | T: Take Damage | G: Gain EXP | H: Heal | ESC: Exit");
-	instructionText->SetCharacterSize(20);
-	instructionText->SetFillColor(sf::Color(128, 128, 128)); // LMJ: Gray setting.
+	instructionText->SetString("WASD: Move | T: Damage | G: +EXP | H: Heal | U: Upgrade Knife | I: Add Knife | P: Show Stats | K: Damage Enemy | ESC: Exit");
+	instructionText->SetCharacterSize(16); // 더 작게 만들어서 모든 텍스트가 보이도록
+	instructionText->SetFillColor(sf::Color(128, 128, 128));
 	instructionText->SetPosition(sf::Vector2f(20.f, FRAMEWORK.GetWindowSizeF().y - 30.f));
 	instructionText->sortingLayer = SortingLayers::UI;
 	instructionText->sortingOrder = 5;
@@ -137,10 +154,9 @@ void SceneGame::Update(float dt)
 	if (player != nullptr)
 	{
 		sf::Vector2f playerPos = player->GetPosition();
-
-		// LMJ: This part doesnt work.
 		UpdateCameraWithBounds(playerPos);
 
+		// 기존 테스트 코드들
 		if (InputMgr::GetKeyDown(sf::Keyboard::T))
 		{
 			int currentHp = player->GetCurrentHp();
@@ -159,12 +175,52 @@ void SceneGame::Update(float dt)
 			int newHp = player->GetCurrentHp();
 			std::cout << "HP healed!!! HP: " << currentHp << " -> " << newHp << std::endl;
 		}
+
+		// 무기 테스트 코드들
+		if (InputMgr::GetKeyDown(sf::Keyboard::U))
+		{
+			if (weaponManager != nullptr)
+			{
+				weaponManager->UpgradeWeapon(WeaponType::Knife);
+				std::cout << "Knife upgraded!" << std::endl;
+			}
+		}
+
+		if (InputMgr::GetKeyDown(sf::Keyboard::I))
+		{
+			if (weaponManager != nullptr && !weaponManager->HasWeapon(WeaponType::Knife))
+			{
+				weaponManager->AddWeapon(WeaponType::Knife);
+				std::cout << "Knife added!" << std::endl;
+			}
+		}
+
+		// 스탯 디버그 출력
+		if (InputMgr::GetKeyDown(sf::Keyboard::P))
+		{
+			const PlayerStats& stats = player->GetPlayerStats();
+			std::cout << "=== Player Stats ===" << std::endl;
+			std::cout << "Level: " << player->GetLevel() << std::endl;
+			std::cout << "Might: " << stats.mightMultiplier << "x" << std::endl;
+			std::cout << "Area: " << stats.areaMultiplier << "x" << std::endl;
+			std::cout << "Speed: " << stats.speedMultiplier << "x" << std::endl;
+			std::cout << "Amount: +" << stats.amountBonus << std::endl;
+			std::cout << "Cooldown: " << stats.cooldownMultiplier << "x" << std::endl;
+			std::cout << "Crit Chance: " << (stats.critChance * 100) << "%" << std::endl;
+			std::cout << "Move Speed: " << player->GetFinalMoveSpeed() << std::endl;
+			std::cout << "Max HP: " << player->GetFinalMaxHP() << std::endl;
+			std::cout << "Armor: " << stats.armorValue << std::endl;
+			std::cout << "Recovery: " << stats.recoveryBonus << " HP/sec" << std::endl;
+			std::cout << "===================" << std::endl;
+		}
+
+		// 기존 적 데미지 테스트
 		if (InputMgr::GetKeyDown(sf::Keyboard::K))
 		{
 			if (testEnemy != nullptr && testEnemy->GetActive() && !testEnemy->IsDead())
 			{
 				testEnemy->TakeDamage(25);
-				std::cout << "enemy damage taken!" << testEnemy->GetEnemyHp() << std::endl;
+				std::cout << "enemy damage taken! HP: " << testEnemy->GetEnemyHp() << std::endl;
 				if (testEnemy->GetEnemyHp() <= 0)
 				{
 					player->GainExperience(testEnemy->GetExpValue());
@@ -277,13 +333,16 @@ void SceneGame::CheckGameOver()
 void SceneGame::UpdateUI(float dt)
 {
 	if (player == nullptr) return;
+
 	if (textHp != nullptr)
 	{
-		std::string hpString = "HP: " + std::to_string(player->GetCurrentHp()) + "/" + std::to_string(player->GetMaxHp());
+		// 최종 HP 사용
+		int finalMaxHp = player->GetFinalMaxHP();
+		std::string hpString = "HP: " + std::to_string(player->GetCurrentHp()) + "/" + std::to_string(finalMaxHp);
 		textHp->SetString(hpString);
 
-		float hpRatio = (float)player->GetCurrentHp() / (float)player->GetMaxHp();
-		if (hpRatio > 0.5f) textHp->SetFillColor(sf::Color::Green); // LMJ: 50/100 = 0.5f
+		float hpRatio = static_cast<float>(player->GetCurrentHp()) / finalMaxHp;
+		if (hpRatio > 0.5f) textHp->SetFillColor(sf::Color::Green);
 		else if (hpRatio > 0.25f) textHp->SetFillColor(sf::Color::Yellow);
 		else textHp->SetFillColor(sf::Color::Red);
 	}

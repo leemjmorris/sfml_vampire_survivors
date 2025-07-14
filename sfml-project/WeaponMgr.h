@@ -1,171 +1,201 @@
 #pragma once
 #include "GameObject.h"
+#include "Player.h"
 #include <vector>
+#include <unordered_set>
 
 class Player;
 class Enemy;
 class Scene;
 
+// LMJ: Forward declaration - PlayerStats is now defined in Player.h
+struct PlayerStats;
+
 enum class WeaponType
 {
-	Knife,
-	// LMJ: Weapons to be added l8er on.
+    Knife,
+    // LMJ: Future weapons can be added here
+    Count
 };
 
 enum class WeaponRarity
 {
-	Common,
-	Uncommon,
-	Rare,
-	Epic,
-	Legendary
+    Common,
+    Uncommon,
+    Rare,
+    Epic,
+    Legendary
 };
 
 struct Projectile
 {
-	sf::Sprite sprite;
-	sf::Vector2f velocity;
+    sf::Sprite sprite;
+    sf::Vector2f velocity;
+    sf::Vector2f startPosition;
 
-	// LMJ: projectile display time
-	float lifeTime = 0.f;
-	float currentLife = 0.f;
-	bool active = true;
+    // LMJ: Lifetime management
+    float lifeTime = 3.0f;
+    float currentLife = 0.0f;
+    bool active = true;
 
-	// LMJ: damage
-	int baseDamage = 0;
-	int actualDamage = 0;
-	bool isCritical = false;
+    // LMJ: Damage properties
+    int baseDamage = 0;
+    int actualDamage = 0;
+    bool isCritical = false;
 
-	// LMJ: penetration
-	int pierce = 0;
-	int currentPierce = 0;
-	std::vector<void*> hitEnemies;
+    // LMJ: Penetration system
+    int maxPierce = 1;
+    int currentPierce = 0;
+    std::unordered_set<void*> hitEnemies; // LMJ: Track hit enemies for pierce system
 
-	// LMJ: knockbacks
-	float knockback;
+    // LMJ: Combat properties
+    float knockback = 1.0f;
+    bool blockByWalls = true;
 
-	// LMJ: hitbox
-	float hitboxDelay;
-	float lastHitTime;
+    // LMJ: Hitbox delay system
+    float hitboxDelay = 0.1f;
+    float lastHitTime = 0.0f;
 
-	Projectile() = default;
-	Projectile(const sf::Vector2f& pos, const sf::Vector2f& vel, int dmg, const std::string& textureId, int pierceCount = 1, float kb = 1.f);
+    // LMJ: Visual properties
+    float area = 1.0f; // For scaling sprite size
+    WeaponType weaponType;
 
-	void Update(float dt);
-	void Draw(sf::RenderWindow& window);
-	bool IsAlive() const { return active && currentLife < lifeTime && currentPierce < pierce; }
-	bool CanHitEnemy(void* enemy) const;
-	void OnHitEnemy(void* enemy);
+    Projectile() = default;
+    Projectile(const sf::Vector2f& pos, const sf::Vector2f& vel, int dmg,
+        const std::string& textureId, WeaponType type, int pierceCount = 1,
+        float kb = 1.0f, float lifetime = 3.0f);
+
+    void Update(float dt);
+    void Draw(sf::RenderWindow& window);
+    bool IsAlive() const { return active && currentLife < lifeTime && currentPierce < maxPierce; }
+    bool CanHitEnemy(void* enemy) const;
+    void OnHitEnemy(void* enemy);
+    void ApplyAreaScaling(float areaMultiplier);
 };
 
 struct WeaponInfo
 {
-	WeaponType type;
-	std::string name;
-	std::string textureId;
-	WeaponRarity rarity;
+    WeaponType type;
+    std::string name;
+    std::string textureId;
+    WeaponRarity rarity;
 
-	// LMJ: Level
-	int level;
-	int maxLevel;
+    // LMJ: Level system
+    int level = 1;
+    int maxLevel = 8;
 
-	// LMJ: Major Stats
-	int baseDamage;
-	float area;
-	float speed;
-	int amount;
-	float duration;
-	int pierce;
-	float cooldown;
-	float projectileInterval;
-	float hitboxDelay;
-	float knockback;
-	int poolLimit;
-	float chance;
-	float critMulti;
-	bool blockByWalls;
+    // LMJ: Base stats (from weapon definition)
+    int baseDamage = 10;
+    float area = 1.0f;
+    float speed = 200.0f;
+    int amount = 1;
+    float duration = 0.0f;          // LMJ: 0 = instant projectile
+    int pierce = 1;
+    float cooldown = 1.0f;
+    float projectileInterval = 0.0f; // LMJ: Time between projectiles in same attack
+    float hitboxDelay = 0.1f;
+    float knockback = 1.0f;
+    int poolLimit = 50;             // LMJ: Max projectiles on screen
+    float chance = 1.0f;            // LMJ: 100% chance by default
+    float critMulti = 2.0f;
+    bool blockByWalls = true;
 
-	// LMJ: Actual stats that effct;
-	int finalDamage;
-	float finalArea;
-	float finalSpeed;
-	int finalAmount;
-	float finalDuration;
-	int finalPierce;
-	float finalColldown;
-	float finalKnockback;
-	float finalChance;
+    // LMJ: Final calculated stats (after player stats)
+    int finalDamage = 10;
+    float finalArea = 1.0f;
+    float finalSpeed = 200.0f;
+    int finalAmount = 1;
+    float finalDuration = 0.0f;
+    int finalPierce = 1;
+    float finalCooldown = 1.0f;
+    float finalKnockback = 1.0f;
+    float finalChance = 1.0f;
 
-	WeaponInfo(WeaponType t, const std::string& n, const std::string& tex, WeaponRarity r = WeaponRarity::Common);
+    // LMJ: Internal timing
+    float currentCooldown = 0.0f;
+    float lastAttackTime = 0.0f;
 
-	void CalculateFinalStats(const struct PlayerStats& playerStats);
-	void LevelUp();
+    WeaponInfo() = default;
+    WeaponInfo(WeaponType t, const std::string& n, const std::string& tex, WeaponRarity r = WeaponRarity::Common);
+
+    void CalculateFinalStats(const PlayerStats& playerStats);
+    void LevelUp();
+    bool CanAttack() const { return currentCooldown <= 0.0f; }
+    void StartCooldown() { currentCooldown = finalCooldown; }
 };
 
 class WeaponMgr : public GameObject
 {
 private:
-	Player* owner;
-	Scene* currentScene;
+    Player* owner = nullptr;
+    Scene* currentScene = nullptr;
 
-	std::vector<WeaponInfo> weapons;
-	std::vector<Projectile> projectiles;
+    std::vector<WeaponInfo> weapons;
+    std::vector<Projectile> projectiles;
 
-	std::vector<float> weaponTimers;
+    PlayerStats playerStats;
+
+    // LMJ: Attack timing
+    float globalAttackTimer = 0.0f;
+
+    // LMJ: Weapon definitions (static data)
+    static void InitializeWeaponDefinitions();
+    static std::vector<WeaponInfo> weaponDefinitions;
+    static bool definitionsInitialized;
 
 public:
-	WeaponMgr(const std::string& name = "WeaponManager");
-	~WeaponMgr() = default;
+    WeaponMgr(const std::string& name = "WeaponManager");
+    ~WeaponMgr() = default;
 
-	void Init() override;
-	void Release() override;
-	void Reset() override;
-	void Update(float dt) override;
-	void Draw(sf::RenderWindow& window) override;
+    void Init() override;
+    void Release() override;
+    void Reset() override;
+    void Update(float dt) override;
+    void Draw(sf::RenderWindow& window) override;
 
-	// LMJ: SETTER
-	void SetOwner(Player* player) { owner = player; }
-	void SetScene(Scene* scene) { currentScene = scene; }
+    // LMJ: Setup methods
+    void SetOwner(Player* player) { owner = player; }
+    void SetScene(Scene* scene) { currentScene = scene; }
+    void UpdatePlayerStats(const PlayerStats& stats);
 
-	// LMJ: Weapon related
-	void AddWeapon(WeaponType type);
-	void UpgradeWeapon(WeaponType type);
-	void UpgradeRandomWeapon();
+    // LMJ: Weapon management
+    void AddWeapon(WeaponType type);
+    void UpgradeWeapon(WeaponType type);
+    void UpgradeRandomWeapon();
+    bool HasWeapon(WeaponType type) const;
 
-	// LMJ: Player Stats
-	void UpdateAllWeaponStats();
+    // LMJ: Combat system
+    void UpdateWeaponCooldowns(float dt);
+    void TryAttackWithAllWeapons(float dt);
+    void AttackWithWeapon(WeaponInfo& weapon);
 
-	// LMJ: Attack methods
-	void UpdateWeaponCooldowns(float dt);
-	void TryAttackWithWeapon(int weaponIndex, float dt);
-	void AttackWithWeapon(const WeaponInfo& weapon);
+    // LMJ: Projectile management
+    void CreateProjectile(const sf::Vector2f& pos, const sf::Vector2f& direction,
+        const WeaponInfo& weapon, bool isCritical = false);
+    void UpdateProjectiles(float dt);
+    void CheckProjectileCollisions();
+    void RemoveDeadProjectiles();
+    bool IsProjectilePoolFull(const WeaponInfo& weapon) const;
 
-	// LMJ: Projectile methods
-	void CreateProjectile(const sf::Vector2f& pos, const sf::Vector2f& direction, const WeaponInfo& weapon, bool isCritical = false);
-	void UpdateProjectiles(float dt);
-	void CheckProjectileCollisions();
-	void CheckProjectileWithEnemy(Projectile& projectile, Enemy* enemy);
-	void RemoveDeadProjectiles();
-	bool IsProjectilePoolFull(const WeaponInfo& weapon) const;
+    // LMJ: Utility methods
+    sf::Vector2f GetRandomDirection() const;
+    sf::Vector2f GetDirectionToNearestEnemy() const;
+    sf::Vector2f GetOwnerPosition() const;
+    bool RollCritical(float critChance) const;
+    bool RollChance(float chance) const;
 
-	// LMJ: Utils
-	sf::Vector2f GetRandomDirection() const;
-	sf::Vector2f GetRandomPositionAroundOwner(float radius) const;
-	sf::Vector2f GetownerPosition() const;
-	bool RollCritical(float critChance) const;
-	bool RollChance(float chance) const;
+    // LMJ: Collision detection
+    bool CheckProjectileEnemyCollision(const Projectile& projectile, const Enemy* enemy) const;
 
-	// LMJ: Visuals
-	void ApplyProjectileVisualEffects(Projectile& projectile, float dt);
-	void CreateMuzzleFlash(const sf::Vector2f& position);
+    // LMJ: Getters
+    int GetWeaponCount() const { return static_cast<int>(weapons.size()); }
+    int GetProjectileCount() const { return static_cast<int>(projectiles.size()); }
+    const WeaponInfo* GetWeapon(WeaponType type) const;
+    const std::vector<WeaponInfo>& GetAllWeapons() const { return weapons; }
 
-	// LMJ: Collision check
-	bool CheckCircularCollision(const sf::Vector2f& pos1, float radius1, const sf::Vector2f pos2, float radius2) const;
-	bool CheckSpriteCollision(const sf::Sprite& sprite1, const sf::Sprite& sprite2) const;
-
-	// LMJ: GETTER
-	int GetWeaponCount() const { return weapons.size(); }
-	int GetProjectileCount() const { return projectiles.size(); }
-	const WeaponInfo* GetWeapon(WeaponType type) const;
+private:
+    // LMJ: Helper methods
+    WeaponInfo* FindWeapon(WeaponType type);
+    std::vector<Enemy*> GetNearbyEnemies(float range) const;
+    void DamageEnemy(Enemy* enemy, int damage, float knockback);
 };
-

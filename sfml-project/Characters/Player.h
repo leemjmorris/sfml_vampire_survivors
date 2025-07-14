@@ -1,11 +1,37 @@
+// =============================================================================
+// Player.h 수정 사항
+// =============================================================================
+
 #pragma once
 #include "GameObject.h"
 #include "Animator.h"
-#include "Enemy.h"
 
 class TiledMap;
+class WeaponMgr;
 
-class Player :  public GameObject
+// Player stats structure moved here from WeaponMgr.h
+struct PlayerStats
+{
+    float mightMultiplier = 1.0f;    // Damage multiplier
+    float areaMultiplier = 1.0f;     // Area multiplier
+    float speedMultiplier = 1.0f;    // Projectile speed multiplier
+    int amountBonus = 0;             // Additional projectiles
+    float durationMultiplier = 1.0f; // Duration multiplier
+    float cooldownMultiplier = 1.0f; // Cooldown multiplier (lower is better)
+    float luckBonus = 0.0f;          // Luck bonus for chance-based effects
+    float critChance = 0.05f;        // Base 5% crit chance
+    float critMultiplier = 2.0f;     // 2x damage on crit
+
+    // Movement and survival stats
+    float moveSpeedMultiplier = 1.0f;
+    float healthMultiplier = 1.0f;
+    float expMultiplier = 1.0f;
+    float recoveryBonus = 0.0f;      // Health recovery per second
+    float armorValue = 0.0f;         // Damage reduction
+    float invincibilityBonus = 0.0f; // Additional invincibility time
+};
+
+class Player : public GameObject
 {
 protected:
     sf::Sprite sprite;
@@ -13,8 +39,8 @@ protected:
 
     sf::Vector2f velocity;
     sf::Vector2f direction;
-    float speed = 200.0f;
-    
+    float baseSpeed = 200.0f;  // 기본 속도
+
     int maxHp = 100;
     int currentHp = 100;
     int level = 1;
@@ -26,10 +52,18 @@ protected:
     bool deathAnimationFinished = false;
 
     float invincibleTime = 0.f;
-    float invincibleDuration = 0.f;
+    float baseInvincibleDuration = 1.0f; // 기본 무적 시간
 
-    TiledMap* currentMap = nullptr; // LMJ: Map boundary checking
-    float playerRadius = 32.0f; // LMJ: Half of player sprite size for collision
+    TiledMap* currentMap = nullptr;
+    float playerRadius = 32.0f;
+
+    // Stats system
+    PlayerStats playerStats;
+    WeaponMgr* weaponMgr = nullptr;
+
+private:
+    void UpdateStats(); // 레벨업이나 아이템 획득 시 스탯 업데이트
+    void ApplyStatsToAttributes(); // 계산된 스탯을 실제 속성에 적용
 
 public:
     Player(const std::string& name = "Player");
@@ -48,7 +82,7 @@ public:
     void Reset() override;
     void Update(float dt) override;
     void Draw(sf::RenderWindow& window) override;
-    
+
     void HandleInput(float dir);
     void UpdateAnimation();
     void TakeDamage(int damage);
@@ -56,23 +90,37 @@ public:
     void LevelUp();
     void Heal(int amount);
 
-        // LMJ: Map boundary methods
+    // Map boundary methods
     void SetCurrentMap(TiledMap* map) { currentMap = map; }
     void CheckMapBoundaries();
 
+    // Weapon system
+    void SetWeaponManager(WeaponMgr* mgr) { weaponMgr = mgr; }
+    WeaponMgr* GetWeaponManager() const { return weaponMgr; }
+
+    // Stats system
+    const PlayerStats& GetPlayerStats() const { return playerStats; }
+    void ModifyStats(const PlayerStats& modification); // 스탯 수정 (아이템, 버프 등)
+    void ResetStatsToBase(); // 기본 스탯으로 리셋
+
+    // Stat getters for individual values
+    float GetFinalMoveSpeed() const { return baseSpeed * playerStats.moveSpeedMultiplier; }
+    float GetFinalInvincibilityDuration() const { return baseInvincibleDuration + playerStats.invincibilityBonus; }
+    int GetFinalMaxHP() const { return static_cast<int>(maxHp * playerStats.healthMultiplier); }
+
+    // Existing getters
     sf::Vector2f GetVelocity() const { return velocity; }
-  
     int GetCurrentHp() const { return currentHp; }
     int GetMaxHp() const { return maxHp; }
     int GetLevel() const { return level; }
     int GetExperience() const { return experience; }
     int GetExperienceToNext() const { return experienceToNextLevel; }
-    
+
     bool IsInvincible() const { return invincibleTime > 0.f; }
     bool IsDead() const { return isDead; }
     bool IsDeathAnimationFinished() const { return deathAnimationFinished; }
 
     void OnDeathAnimationComplete() { deathAnimationFinished = true; }
-    void SetSpeed(float newSpeed) { speed = newSpeed; }
+    void SetSpeed(float newSpeed) { baseSpeed = newSpeed; }
     void SetMaxHp(int newMaxHp) { maxHp = newMaxHp; }
 };

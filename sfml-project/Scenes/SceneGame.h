@@ -5,6 +5,7 @@ class Player;
 class Enemy;
 class TextGo;
 class TiledMap;
+class WeaponMgr;
 
 class SceneGame : public Scene
 {
@@ -12,6 +13,7 @@ protected:
 	Player* player = nullptr;
 	Enemy* testEnemy = nullptr;
 	TiledMap* tiledMap = nullptr; // LMJ: Tiled map for background
+	WeaponMgr* weaponManager = nullptr;
 
 	TextGo* textHp = nullptr;
 	TextGo* textLevel = nullptr;

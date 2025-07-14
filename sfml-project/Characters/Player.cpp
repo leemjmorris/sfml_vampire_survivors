@@ -81,9 +81,13 @@ void Player::Reset()
 	isDead = false;
 	deathAnimationFinished = false;
 
+	// Initialize stats to base values
+	ResetStatsToBase();
+	UpdateStats();
+	ApplyStatsToAttributes();
+
 	SetOrigin(Origins::MC);
 
-	// LMJ: Player spawn in center of display.
 	sf::Vector2f windowSize = FRAMEWORK.GetWindowSizeF();
 	sf::Vector2f centerPos = sf::Vector2f(windowSize.x * 0.5f, windowSize.y * 0.5f);
 	SetPosition(centerPos);
@@ -110,17 +114,23 @@ void Player::Update(float dt)
 
 	HandleInput(dt);
 
+	// Use final move speed from stats
+	velocity = direction * GetFinalMoveSpeed();
 	position += velocity * dt;
 	SetPosition(position);
 
-	// LMJ: Check map boundaries (only use map boundaries if map exists)
+	// Health recovery from stats
+	if (playerStats.recoveryBonus > 0.0f && currentHp < GetFinalMaxHP())
+	{
+		Heal(static_cast<int>(playerStats.recoveryBonus * dt));
+	}
+
 	if (currentMap != nullptr)
 	{
 		CheckMapBoundaries();
 	}
 	else
 	{
-		// LMJ: Fallback to window boundary check if no map is set
 		sf::Vector2f windowSize = FRAMEWORK.GetWindowSizeF();
 		sf::FloatRect bounds = GetGlobalBounds();
 
@@ -133,8 +143,13 @@ void Player::Update(float dt)
 	}
 
 	UpdateAnimation();
-
 	animator.Update(dt);
+
+	// Update weapon manager with current stats
+	if (weaponMgr != nullptr)
+	{
+		weaponMgr->UpdatePlayerStats(playerStats);
+	}
 }
 
 void Player::CheckMapBoundaries()
@@ -184,7 +199,7 @@ void Player::HandleInput(float dir)
 		Utils::Normalize(direction);
 	}
 
-	velocity = direction * speed;
+	velocity = direction * baseSpeed;
 }
 
 void Player::UpdateAnimation()
@@ -242,18 +257,20 @@ void Player::TakeDamage(int damage)
 {
 	if (invincibleTime > 0.f || isDead) return;
 
-	currentHp -= damage;
+	// Apply armor reduction
+	float damageReduction = playerStats.armorValue / (playerStats.armorValue + 100.0f);
+	int finalDamage = static_cast<int>(damage * (1.0f - damageReduction));
+	finalDamage = std::max(1, finalDamage); // Minimum 1 damage
+
+	currentHp -= finalDamage;
 	if (currentHp < 0) currentHp = 0;
 
-	invincibleTime = invincibleDuration;
+	invincibleTime = GetFinalInvincibilityDuration();
 	sprite.setColor(sf::Color::Red);
-
-	// LMJ: Put Game Over Function HERE!!!!
 
 	if (currentHp <= 0)
 	{
 		isDead = true;
-
 		sprite.setColor(sf::Color::White);
 
 		animator.AddEvent("animations/death.csv", 14, [this]() {
@@ -268,9 +285,10 @@ void Player::TakeDamage(int damage)
 
 void Player::GainExperience(int exp)
 {
-	experience += exp;
+	int finalExp = static_cast<int>(exp * playerStats.expMultiplier);
+	experience += finalExp;
 
-	while (experience >= experienceToNextLevel) // LMJ: Level UP Method needed
+	while (experience >= experienceToNextLevel)
 	{
 		experience -= experienceToNextLevel;
 		LevelUp();
@@ -281,20 +299,106 @@ void Player::LevelUp()
 {
 	level++;
 
+	// Base stat increases per level
 	maxHp += 10;
-	currentHp = maxHp;
-	speed += 5.f;
+	baseSpeed += 5.f;
 
-	// LMJ: Levelup EXP Auto Increase. Needed exp will increase rapidly when level gets high.
-	experienceToNextLevel = static_cast<int>(10 * std::pow(level, 1.5f));
+	experienceToNextLevel = static_cast<int>(100 * std::pow(level, 1.5f));
 
-	std::cout << "Level Up! New Level: " << level << std::endl; // LMJ: For debug purpose.
+	// Update player stats based on new level
+	UpdateStats();
+	ApplyStatsToAttributes();
+
+	// Heal to new max HP
+	currentHp = GetFinalMaxHP();
+
+	std::cout << "Level Up! New Level: " << level << std::endl;
+	std::cout << "New Max HP: " << GetFinalMaxHP() << std::endl;
+	std::cout << "New Move Speed: " << GetFinalMoveSpeed() << std::endl;
+}
+
+void Player::UpdateStats()
+{
+	// Reset to base and calculate level-based bonuses
+	ResetStatsToBase();
+
+	// Level-based stat scaling
+	float levelMultiplier = 1.0f + (level - 1) * 0.1f; // 10% increase per level
+
+	playerStats.mightMultiplier = levelMultiplier;
+	playerStats.areaMultiplier = 1.0f + (level - 1) * 0.05f; // 5% area increase per level
+	playerStats.speedMultiplier = 1.0f + (level - 1) * 0.03f; // 3% speed increase per level
+	playerStats.amountBonus = (level - 1) / 3; // +1 projectile every 3 levels
+	playerStats.durationMultiplier = 1.0f;
+	playerStats.cooldownMultiplier = std::max(0.3f, 1.0f - (level - 1) * 0.05f); // Faster cooldown, min 30%
+	playerStats.luckBonus = (level - 1) * 0.01f; // +1% luck per level
+	playerStats.critChance = 0.05f + (level - 1) * 0.01f; // +1% crit per level
+	playerStats.critMultiplier = 2.0f + (level - 1) * 0.1f; // +0.1x crit multiplier per level
+
+	// Survival stats
+	playerStats.moveSpeedMultiplier = 1.0f + (level - 1) * 0.02f; // 2% move speed per level
+	playerStats.healthMultiplier = 1.0f + (level - 1) * 0.05f; // 5% HP per level
+	playerStats.expMultiplier = 1.0f;
+	playerStats.recoveryBonus = (level - 1) * 0.5f; // 0.5 HP/sec per level
+	playerStats.armorValue = (level - 1) * 2.0f; // 2 armor per level
+	playerStats.invincibilityBonus = (level - 1) * 0.1f; // +0.1 sec invincibility per level
+}
+
+
+void Player::ApplyStatsToAttributes()
+{
+	// Update max HP based on health multiplier
+	int newMaxHp = GetFinalMaxHP();
+	if (newMaxHp != maxHp)
+	{
+		float hpRatio = static_cast<float>(currentHp) / maxHp;
+		maxHp = newMaxHp;
+		currentHp = static_cast<int>(maxHp * hpRatio); // Maintain HP ratio
+	}
+}
+
+void Player::ModifyStats(const PlayerStats& modification)
+{
+	// Add modification values to current stats
+	playerStats.mightMultiplier += modification.mightMultiplier - 1.0f;
+	playerStats.areaMultiplier += modification.areaMultiplier - 1.0f;
+	playerStats.speedMultiplier += modification.speedMultiplier - 1.0f;
+	playerStats.amountBonus += modification.amountBonus;
+	playerStats.durationMultiplier += modification.durationMultiplier - 1.0f;
+	playerStats.cooldownMultiplier = std::min(playerStats.cooldownMultiplier, modification.cooldownMultiplier);
+	playerStats.luckBonus += modification.luckBonus;
+	playerStats.critChance += modification.critChance - 0.05f;
+	playerStats.critMultiplier += modification.critMultiplier - 2.0f;
+
+	playerStats.moveSpeedMultiplier += modification.moveSpeedMultiplier - 1.0f;
+	playerStats.healthMultiplier += modification.healthMultiplier - 1.0f;
+	playerStats.expMultiplier += modification.expMultiplier - 1.0f;
+	playerStats.recoveryBonus += modification.recoveryBonus;
+	playerStats.armorValue += modification.armorValue;
+	playerStats.invincibilityBonus += modification.invincibilityBonus;
+
+	// Ensure minimum values
+	playerStats.mightMultiplier = std::max(0.1f, playerStats.mightMultiplier);
+	playerStats.areaMultiplier = std::max(0.1f, playerStats.areaMultiplier);
+	playerStats.speedMultiplier = std::max(0.1f, playerStats.speedMultiplier);
+	playerStats.cooldownMultiplier = std::max(0.1f, playerStats.cooldownMultiplier);
+	playerStats.moveSpeedMultiplier = std::max(0.1f, playerStats.moveSpeedMultiplier);
+	playerStats.healthMultiplier = std::max(0.1f, playerStats.healthMultiplier);
+	playerStats.expMultiplier = std::max(0.1f, playerStats.expMultiplier);
+
+	ApplyStatsToAttributes();
+}
+
+
+void Player::ResetStatsToBase()
+{
+	playerStats = PlayerStats(); // Reset to default values
 }
 
 void Player::Heal(int amount)
 {
 	currentHp += amount;
-	if (currentHp > maxHp) currentHp = maxHp;
+	if (currentHp > GetFinalMaxHP()) currentHp = GetFinalMaxHP();
 }
 
 void Player::Draw(sf::RenderWindow& window)

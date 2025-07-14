@@ -29,3 +29,5 @@
 #include "TiledMap.h"
 #include "Animator.h"
 #include "AnimationClip.h"
+#include "Enemy.h"
+#include "WeaponMgr.h"
