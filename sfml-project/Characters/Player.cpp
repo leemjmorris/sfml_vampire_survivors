@@ -204,10 +204,11 @@ void Player::UpdateAnimation()
 	{
 		animator.SetSpeed(1.0f);
 	}
-	else
-	{
-		animator.SetSpeed(0.f);
-	}
+	// LMJ: have to fix this part. it iterrupts death animations.
+	//else
+	//{
+	//	animator.SetSpeed(0.f);
+	//}
 
 	sf::Vector2f currentPos = GetPosition();
 
@@ -234,6 +235,7 @@ void Player::TakeDamage(int damage)
 	sprite.setColor(sf::Color::Red);
 
 	// LMJ: Put Game Over Function HERE!!!!
+
 	if (currentHp <= 0)
 	{
 		isDead = true;
@@ -242,6 +244,7 @@ void Player::TakeDamage(int damage)
 
 		animator.AddEvent("animations/death.csv", 14, [this]() {
 			OnDeathAnimationComplete();
+			SetActive(false);
 			});
 
 		animator.Play("animations/death.csv");

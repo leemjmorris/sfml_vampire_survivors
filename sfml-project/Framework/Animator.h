@@ -35,7 +35,7 @@ protected:
 	sf::Sprite* sprite;
 
 	bool isPlaying = false;
-	int currentFrame = 0;
+	
 	int totalFrame = 0;
 	int checkFrame = 0;
 
@@ -44,6 +44,7 @@ protected:
 	float speed = 1.f;
 
 public:
+	int currentFrame = 0;
 	Animator() = default;
 	~Animator() = default;
 
