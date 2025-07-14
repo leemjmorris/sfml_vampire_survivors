@@ -202,7 +202,7 @@ void Player::UpdateAnimation()
 
 	if (direction.x != 0.f || direction.y != 0.f)
 	{
-		animator.SetSpeed(1.0f);
+		animator.SetSpeed(1.f);
 	}
 	 // LMJ: have to fix this part. it iterrupts death animations.
 	/*else if (isDead == false)

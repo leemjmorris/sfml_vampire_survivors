@@ -67,6 +67,10 @@ void SceneGame::Init()
 	player = new Player("GamePlayer");
 	AddGameObject(player);
 
+	// LMJ: Enemy for TESTING.
+	testEnemy = new Enemy("TestEnemy");
+	AddGameObject(testEnemy);
+
 	TextGo* instructionText = new TextGo("fonts/DS-DIGIT.ttf");
 	instructionText->SetString("WASD: Move | T: Take Damage | G: Gain EXP | H: Heal | ESC: Exit");
 	instructionText->SetCharacterSize(20);
@@ -100,8 +104,12 @@ void SceneGame::Enter()
 		// LMJ: Get map size for camera boundary calculations
 		mapBounds = tiledMap->GetMapBounds();
 
-		std::cout << "Map bounds set: " << mapBounds.left << ", " << mapBounds.top
-			<< ", " << mapBounds.width << ", " << mapBounds.height << std::endl;
+		std::cout << "Map bounds set: " << mapBounds.left << ", " << mapBounds.top	<< ", " << mapBounds.width << ", " << mapBounds.height << std::endl;
+	}
+
+	if (testEnemy != nullptr && player != nullptr)
+	{
+		testEnemy->FollowPlayer(player);
 	}
 
 	Scene::Enter();
@@ -130,7 +138,7 @@ void SceneGame::Update(float dt)
 	{
 		sf::Vector2f playerPos = player->GetPosition();
 
-		// LMJ: Update camera to follow player with map boundary constraints
+		// LMJ: This part doesnt work.
 		UpdateCameraWithBounds(playerPos);
 
 		if (InputMgr::GetKeyDown(sf::Keyboard::T))

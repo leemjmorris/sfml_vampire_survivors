@@ -18,6 +18,11 @@ protected:
     int hp = 50;
     int damage = 10;
     int expValue = 10;
+
+    bool facingRight = true;
+    bool isDead = false;
+    bool deathAnimationFinished = false;
+
     Player* target = nullptr;
 
 public:
@@ -56,6 +61,8 @@ public:
 
     // LMJ: Map boundary check methods
     // LMJ: Animation methods
+    bool IsDead() const { return isDead; }
+    bool IsDeathAnimationFinished() const { return deathAnimationFinished; }
     // LMJ: After adding Object Class, EXP drop related methods needed
 };
 

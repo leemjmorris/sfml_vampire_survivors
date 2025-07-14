@@ -6,7 +6,7 @@
 
 void Enemy::Init()
 {
-	// LMJ: why? define? i added all .h. need to check after lunch. ASAP >> animator.SetTarget(&sprite);
+	animator.SetTarget(&sprite);
 }
 
 void Enemy::Release()
@@ -30,18 +30,80 @@ void Enemy::Reset()
 	sf::Vector2f windowSize = FRAMEWORK.GetWindowSizeF();
 	SetPosition(sf::Vector2f(windowSize.x * 0.3f, windowSize.y * 0.3f));
 
-	if (TEXTURE_MGR.Exists("graphics/sprite_bat1_run.png"))
-	{
-		animator.Play("animations/bat1_run.csv");
-	}
+	// LMJ: Runtime Error. Check This Part!!!!!
+	//if (TEXTURE_MGR.Exists("graphics/sprite_bat1_run.png"))
+	//{
+	//	animator.Play("animations/bat1_run.csv");
+	//}
 }
 
 void Enemy::Update(float dt)
 {
+	if (isDead)
+	{
+		animator.Update(dt);
+		return;
+	}
+
+	if (hp <= 0)
+	{
+		isDead = true;
+		animator.AddEvent("animations/bat1_death.csv", 14, [this]()
+			{
+				OnDeathAnimationComplete();
+			});
+
+		animator.Play("animations/bat1_death.csv");
+	}
+
+	if (target != nullptr)
+	{
+		FollowPlayer(target);
+	}
+
+	position += velocity * dt;
+	SetPosition(position);
+
+	UpdateAnimation();
+	animator.Update(dt);
+}
+
+void Enemy::UpdateAnimation()
+{
+	if (isDead) return;
+
+	if (velocity.x != 0.f || velocity.y != 0.f)
+	{
+		animator.SetSpeed(1.f);
+		
+		if (velocity.x > 0.f && !facingRight)
+		{
+			facingRight = true;
+			SetScale(sf::Vector2f(-1.f, 1.f));
+		}
+
+		else if (velocity.x < 0.f && facingRight)
+		{
+			facingRight = false;
+			SetScale(sf::Vector2f(1.f, 1.f));
+		}
+	}
+	else
+	{
+		animator.SetSpeed(0.5f);
+	}
+
+	sf::Vector2f currentPos = GetPosition();
+	Utils::SetOrigin(sprite, Origins::MC);
+	sprite.setPosition(currentPos);
 }
 
 void Enemy::Draw(sf::RenderWindow& window)
 {
+	if (active)
+	{
+		window.draw(sprite);
+	}
 }
 
 void Enemy::TakeDamage(int damage)
@@ -50,50 +112,87 @@ void Enemy::TakeDamage(int damage)
 
 void Enemy::FollowPlayer(Player* player)
 {
+	if (player == nullptr || isDead)
+	{
+		velocity = sf::Vector2f(0.f, 0.f);
+		return;
+	}
+
+	target = player;
+	sf::Vector2f playerPos = player->GetPosition();
+	sf::Vector2f direction = playerPos - position;
+
+	Utils::Normalize(direction);
+
+	velocity = direction * speed;
 }
 
 void Enemy::SetPosition(const sf::Vector2f& pos)
 {
+	position = pos;
+	sprite.setPosition(position);
 }
 
 void Enemy::SetRotation(float angle)
 {
+	rotation = angle;
+	sprite.setRotation(rotation);
 }
 
 void Enemy::SetScale(const sf::Vector2f& s)
 {
+	scale = s;
+	sprite.setScale(scale);
 }
 
 void Enemy::SetOrigin(Origins preset)
 {
+	originPreset = preset;
+	if (originPreset != Origins::Custom)
+	{
+		Utils::SetOrigin(sprite, originPreset);
+	}
 }
 
 void Enemy::SetOrigin(const sf::Vector2f& newOrigin)
 {
+	originPreset = Origins::Custom;
+	origin = newOrigin;
+	sprite.setOrigin(origin);
 }
 
 
 int Enemy::GetEnemyHp() const
 {
-	return 0;
+	return hp;
 }
 
 int Enemy::GetEnemyDamage() const
 {
-	return 0;
+	return damage;
 }
 
 int Enemy::GetExpValue() const
 {
-	return 0;
+	return expValue;
 }
 
 sf::FloatRect Enemy::GetLocalBounds() const
 {
-	return sf::FloatRect();
+	return sprite.getLocalBounds();
 }
 
 sf::FloatRect Enemy::GetGlobalBounds() const
 {
-	return sf::FloatRect();
+	return sprite.getGlobalBounds();
+}
+
+sf::Vector2f Enemy::GetPosition() const
+{
+	return position;
+}
+
+sf::Vector2f Enemy::GetVelocity() const
+{
+	return velocity;
 }

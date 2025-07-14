@@ -2,6 +2,7 @@
 #include "Scene.h"
 
 class Player;
+class Enemy;
 class TextGo;
 class TiledMap;
 
@@ -9,6 +10,7 @@ class SceneGame : public Scene
 {
 protected:
 	Player* player = nullptr;
+	Enemy* testEnemy = nullptr;
 	TiledMap* tiledMap = nullptr; // LMJ: Tiled map for background
 
 	TextGo* textHp = nullptr;
