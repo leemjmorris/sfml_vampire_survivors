@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "TiledMap.h"
+#include "WeaponMgr.h"
 
 Player::Player(const std::string& name)
 {

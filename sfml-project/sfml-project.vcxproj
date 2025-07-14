@@ -161,6 +161,7 @@
     <ClCompile Include="Framework\Utils.cpp" />
     <ClCompile Include="Framework\Variables.cpp" />
     <ClCompile Include="Framework\TiledMap.cpp" />
+    <ClCompile Include="WeaponMgr.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Characters\Enemy.h" />
@@ -187,6 +188,7 @@
     <ClInclude Include="Framework\Utils.h" />
     <ClInclude Include="Framework\Variables.h" />
     <ClInclude Include="Framework\TiledMap.h" />
+    <ClInclude Include="WeaponMgr.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
