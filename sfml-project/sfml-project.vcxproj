@@ -160,7 +160,7 @@
     <ClCompile Include="Framework\TextGo.cpp" />
     <ClCompile Include="Framework\Utils.cpp" />
     <ClCompile Include="Framework\Variables.cpp" />
-    <ClCompile Include="TiledMap.cpp" />
+    <ClCompile Include="Framework\TiledMap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Characters\Enemy.h" />
@@ -186,7 +186,7 @@
     <ClInclude Include="Framework\TextGo.h" />
     <ClInclude Include="Framework\Utils.h" />
     <ClInclude Include="Framework\Variables.h" />
-    <ClInclude Include="TiledMap.h" />
+    <ClInclude Include="Framework\TiledMap.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

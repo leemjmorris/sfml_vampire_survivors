@@ -4,17 +4,22 @@
 #include "TextGo.h"
 #include "TiledMap.h"
 
-SceneGame::SceneGame() : Scene(SceneIds::Game) // LMJ: Need to Change l8er. Need to Add SceneIds->SceneGame.
+SceneGame::SceneGame() : Scene(SceneIds::Game) // LMJ: Need to Change l8er. Need to Add SceneIds->Game.
 {
 }
 
 void SceneGame::Init()
 {
-	// LMJ: Add background texture for tiled map
 	texIds.push_back("graphics/background_forest.png");
-	// LMJ: Need To Change Resource, This is Just For Test Drive Only.
+	// LMJ: Player sprite section
 	texIds.push_back("graphics/sprite_run.png");
 	texIds.push_back("graphics/sprite_death.png");
+
+	// LMJ: Enemy sprite section
+	texIds.push_back("graphics/sprite_bat1_run.png");
+	texIds.push_back("graphics/sprite_bat1_death.png");
+
+	// LMJ: Font section
 	fontIds.push_back("fonts/DS-DIGIT.ttf");
 
 	// LMJ: Create tiled map

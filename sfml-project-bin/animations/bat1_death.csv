@@ -1,0 +1,19 @@
+ID,FPS,"LoopType (0: Single, 1: Loop)		",,,
+Bat1_death,5,"0	",,,
+"				",,,,,
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT,"FLIPX (0:False, 1:True)"
+graphics/sprite_bat1_death.png,0,0,55,21,0
+graphics/sprite_bat1_death.png,55,0,55,36,0
+graphics/sprite_bat1_death.png,110,0,55,36,0
+graphics/sprite_bat1_death.png,165,0,55,36,0
+graphics/sprite_bat1_death.png,220,0,55,36,0
+graphics/sprite_bat1_death.png,275,0,55,36,0
+graphics/sprite_bat1_death.png,330,0,55,36,0
+graphics/sprite_bat1_death.png,385,0,55,36,0
+graphics/sprite_bat1_death.png,440,0,55,36,0
+graphics/sprite_bat1_death.png,495,0,55,36,0
+graphics/sprite_bat1_death.png,550,0,55,36,0
+graphics/sprite_bat1_death.png,605,0,55,36,0
+graphics/sprite_bat1_death.png,660,0,55,36,0
+graphics/sprite_bat1_death.png,715,0,55,36,0
+graphics/sprite_bat1_death.png,770,0,55,36,0

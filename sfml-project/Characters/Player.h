@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "Animator.h"
+#include "Enemy.h"
 
 class TiledMap;
 
@@ -60,6 +61,7 @@ public:
     void CheckMapBoundaries();
 
     sf::Vector2f GetVelocity() const { return velocity; }
+  
     int GetCurrentHp() const { return currentHp; }
     int GetMaxHp() const { return maxHp; }
     int GetLevel() const { return level; }

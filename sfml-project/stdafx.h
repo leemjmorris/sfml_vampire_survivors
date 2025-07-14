@@ -27,3 +27,5 @@
 #include "SoundMgr.h"
 #include "Framework.h"
 #include "TiledMap.h"
+#include "Animator.h"
+#include "AnimationClip.h"
