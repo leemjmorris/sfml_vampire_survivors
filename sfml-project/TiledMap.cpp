@@ -66,7 +66,7 @@ sf::Vector2f TiledMap::ClampToMapBounds(const sf::Vector2f& position, float obje
 
 void TiledMap::Init()
 {
-    // LMJ: Texture will be loaded in Reset()
+    // LMJ: No need to make.
 }
 
 void TiledMap::Release()
@@ -102,7 +102,7 @@ void TiledMap::Reset()
         chunkCount.x = (mapSizeInTiles.x + CHUNK_SIZE - 1) / CHUNK_SIZE;
         chunkCount.y = (mapSizeInTiles.y + CHUNK_SIZE - 1) / CHUNK_SIZE;
 
-        std::cout << "=== OPTIMIZED MAP INFO ===" << std::endl;
+        std::cout << "=== IS MAP WORKING? ===" << std::endl;
         std::cout << "Window size: " << windowSize.x << "x" << windowSize.y << std::endl;
         std::cout << "Map size: " << mapSizeInPixels.x << "x" << mapSizeInPixels.y << std::endl;
         std::cout << "Tiles: " << mapSizeInTiles.x << "x" << mapSizeInTiles.y << std::endl;
@@ -182,18 +182,17 @@ void TiledMap::BuildChunks()
     }
 }
 
-void TiledMap::BuildChunk(int chunkX, int chunkY)
-{
-    // LMJ: This method is for future use if we want to build chunks on demand
-    if (chunkY >= 0 && chunkY < chunkCount.y && chunkX >= 0 && chunkX < chunkCount.x)
-    {
-        // Implementation would be similar to the chunk building in BuildChunks()
-    }
-}
+// LMJ: Dont need it for now. Need to figure out how it works tho. it might get handy some day. This method is to be used when we wnat chunks to built on demands.
+//void TiledMap::BuildChunk(int chunkX, int chunkY)
+//{
+//    if (chunkY >= 0 && chunkY < chunkCount.y && chunkX >= 0 && chunkX < chunkCount.x)
+//    {
+//    }
+//}
 
 void TiledMap::Update(float dt)
 {
-    // LMJ: Map doesn't need regular updates
+    // LMJ: Map doesn't need regular updates just for now.
 }
 
 void TiledMap::Draw(sf::RenderWindow& window)
@@ -210,7 +209,7 @@ void TiledMap::Draw(sf::RenderWindow& window)
         currentView.getSize().y * 1.2f
     );
 
-    // LMJ: Draw only visible chunks
+    // LMJ: Draw only visible chunks. help from gpt. need to study and understand.
     sf::RenderStates states;
     states.texture = &TEXTURE_MGR.Get(textureId);
 
