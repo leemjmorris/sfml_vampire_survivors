@@ -111,6 +111,24 @@ void Enemy::Draw(sf::RenderWindow& window)
 
 void Enemy::TakeDamage(int damage)
 {
+	hp -= damage;
+	if (hp < 0) hp = 0;
+	sprite.setColor(sf::Color::Red);
+	sprite.setColor(sf::Color::White);
+
+	if (hp <= 0)
+	{
+		isDead = true;
+
+		sprite.setColor(sf::Color::White);
+
+		animator.AddEvent("animations/bat1_death.csv", 14, [this]() {
+			OnDeathAnimationComplete();
+			SetActive(false);
+			});
+		animator.Play("animations/bat1_death.csv");
+		std::cout << "testEnemy dead" << std::endl;
+	}
 }
 
 void Enemy::FollowPlayer(Player* player)

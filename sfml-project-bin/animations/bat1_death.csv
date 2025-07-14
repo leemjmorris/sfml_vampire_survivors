@@ -1,5 +1,5 @@
 ID,FPS,"LoopType (0: Single, 1: Loop)		",,,
-Bat1_death,5,"0	",,,
+Bat1_death,10,"0	",,,
 "				",,,,,
 TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT,"FLIPX (0:False, 1:True)"
 graphics/sprite_bat1_death.png,0,0,55,21,0

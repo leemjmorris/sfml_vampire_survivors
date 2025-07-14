@@ -206,22 +206,22 @@ void Player::UpdateAnimation()
 		animator.SetSpeed(1.f);
 	}
 	// LMJ: Trying to fix this part.
-	else if (direction.x == 0.f || direction.y == 0.f)
-	{
-		if (isDead == false)
-		{
-			animator.SetSpeed(0.f);
-		}
-		else
-		{
-			animator.SetSpeed(1.f);
-		}
-	}
-	 // LMJ: have to fix this part. it iterrupts death animations.
-	/*else if (isDead == false)
-	{
-		animator.SetSpeed(0.f);
-	}*/
+	//else if (direction.x == 0.f || direction.y == 0.f)
+	//{
+	//	if (isDead == false)
+	//	{
+	//		animator.SetSpeed(0.f);
+	//	}
+	//	else
+	//	{
+	//		animator.SetSpeed(1.f);
+	//	}
+	//}
+	// // LMJ: have to fix this part. it iterrupts death animations.
+	//else if (isDead == false)
+	//{
+	//	animator.SetSpeed(0.f);
+	//}
 
 	sf::Vector2f currentPos = GetPosition();
 

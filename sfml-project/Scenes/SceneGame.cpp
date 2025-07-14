@@ -164,9 +164,12 @@ void SceneGame::Update(float dt)
 			if (testEnemy != nullptr && testEnemy->GetActive() && !testEnemy->IsDead())
 			{
 				testEnemy->TakeDamage(25);
+				std::cout << "enemy damage taken!" << testEnemy->GetEnemyHp() << std::endl;
 				if (testEnemy->GetEnemyHp() <= 0)
 				{
 					player->GainExperience(testEnemy->GetExpValue());
+					std::cout << "enemy dead" << std::endl;
+					std::cout << "player gain exp: " << player->GetExperience() << std::endl;
 				}
 			}
 		}
