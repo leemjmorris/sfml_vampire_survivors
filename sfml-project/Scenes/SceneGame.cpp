@@ -378,5 +378,6 @@ void SceneGame::UpdateUI(float dt)
 void SceneGame::Draw(sf::RenderWindow& window)
 {
 	Scene::Draw(window);
+	window.setView(worldView);
 	CollisionManager::DrawAll(window);
 }
