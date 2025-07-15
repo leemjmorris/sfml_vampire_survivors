@@ -1,5 +1,6 @@
 #pragma once
 #include "Scene.h"
+#include "HitBox.h"
 
 class Player;
 class Enemy;

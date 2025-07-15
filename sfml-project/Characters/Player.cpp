@@ -4,14 +4,30 @@
 #include "TiledMap.h"
 #include "WeaponMgr.h"
 
-Player::Player(const std::string& name)
+Player::Player(const std::string& name) : GameObject(name)
 {
+	hitBox = new PlayerHitBox(this);
+}
+
+Player::~Player()
+{
+	if (hitBox)
+	{
+		CollisionManager::UnregisterHitBox(hitBox);
+		delete hitBox;
+		hitBox = nullptr;
+	}
 }
 
 void Player::SetPosition(const sf::Vector2f& pos)
 {
 	position = pos;
 	sprite.setPosition(position);
+
+	if (hitBox)
+	{
+		hitBox->UpdateTransform(pos);
+	}
 }
 
 void Player::SetRotation(float angle)
@@ -58,6 +74,12 @@ void Player::Init()
 
 	ANI_CLIP_MGR.Load("animations/run.csv");
 	ANI_CLIP_MGR.Load("animations/death.csv");
+
+	if (hitBox)
+	{
+		hitBox->SetCircle(hitBoxRadius);
+		hitBox->SetActive(true);
+	}
 }
 
 void Player::Release()
@@ -106,10 +128,14 @@ void Player::Update(float dt)
 
 		float alpha = (sin(invincibleTime * 20.f) + 1.f) * 0.5f;
 		sprite.setColor(sf::Color(255, 255, 255, (alpha * 255)));
+
+		if (hitBox) hitBox->SetActive(true);
 	}
 	else
 	{
 		sprite.setColor(sf::Color::White);
+
+		if (hitBox && isDead) hitBox->SetActive(true);
 	}
 
 	HandleInput(dt);
@@ -144,6 +170,11 @@ void Player::Update(float dt)
 
 	UpdateAnimation();
 	animator.Update(dt);
+
+	if (hitBox)
+	{
+		hitBox->UpdateTransform(sprite.getPosition());
+	}
 
 	// Update weapon manager with current stats
 	if (weaponMgr != nullptr)
@@ -273,6 +304,8 @@ void Player::TakeDamage(int damage)
 		isDead = true;
 		sprite.setColor(sf::Color::White);
 
+		if (hitBox) hitBox->SetActive(false);
+
 		animator.AddEvent("animations/death.csv", 14, [this]() {
 			OnDeathAnimationComplete();
 			SetActive(false);
@@ -280,6 +313,15 @@ void Player::TakeDamage(int damage)
 
 		animator.Play("animations/death.csv");
 		std::cout << "Player Dead!" << std::endl;
+	}
+}
+
+void Player::SetHitBoxRadius(float radius)
+{
+	hitBoxRadius = radius;
+	if (hitBox)
+	{
+		hitBox->SetCircle(radius);
 	}
 }
 

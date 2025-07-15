@@ -1,10 +1,7 @@
-// =============================================================================
-// Player.h 수정 사항
-// =============================================================================
-
 #pragma once
 #include "GameObject.h"
 #include "Animator.h"
+#include "HitBox.h"
 
 class TiledMap;
 class WeaponMgr;
@@ -39,7 +36,7 @@ protected:
 
     sf::Vector2f velocity;
     sf::Vector2f direction;
-    float baseSpeed = 200.0f;  // 기본 속도
+    float baseSpeed = 200.0f;
 
     int maxHp = 100;
     int currentHp = 100;
@@ -52,22 +49,26 @@ protected:
     bool deathAnimationFinished = false;
 
     float invincibleTime = 0.f;
-    float baseInvincibleDuration = 1.0f; // 기본 무적 시간
+    float baseInvincibleDuration = 1.0f;
 
     TiledMap* currentMap = nullptr;
     float playerRadius = 32.0f;
 
-    // Stats system
+    // LMJ: Stats system
     PlayerStats playerStats;
     WeaponMgr* weaponMgr = nullptr;
 
+    // LMJ: HitBox system
+    PlayerHitBox* hitBox = nullptr;
+    float hitBoxRadius = 16.f;
+
 private:
-    void UpdateStats(); // 레벨업이나 아이템 획득 시 스탯 업데이트
-    void ApplyStatsToAttributes(); // 계산된 스탯을 실제 속성에 적용
+    void UpdateStats();
+    void ApplyStatsToAttributes();
 
 public:
     Player(const std::string& name = "Player");
-    ~Player() = default;
+    ~Player();
 
     void SetPosition(const sf::Vector2f& pos) override;
     void SetRotation(float angle) override;
@@ -107,6 +108,9 @@ public:
     float GetFinalMoveSpeed() const { return baseSpeed * playerStats.moveSpeedMultiplier; }
     float GetFinalInvincibilityDuration() const { return baseInvincibleDuration + playerStats.invincibilityBonus; }
     int GetFinalMaxHP() const { return static_cast<int>(maxHp * playerStats.healthMultiplier); }
+
+    PlayerHitBox* GetHitBox() const { return hitBox; }
+    void SetHitBoxRadius(float radius);
 
     // Existing getters
     sf::Vector2f GetVelocity() const { return velocity; }

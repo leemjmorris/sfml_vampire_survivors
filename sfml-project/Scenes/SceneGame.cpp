@@ -24,6 +24,8 @@ void SceneGame::Init()
 	// LMJ: Font section
 	fontIds.push_back("fonts/DS-DIGIT.ttf");
 
+	CollisionManager::SetDebugDraw(true);
+
 	// LMJ: Create tiled map
 	tiledMap = new TiledMap("graphics/background_forest.png", "ForestMap");
 	AddGameObject(tiledMap);
@@ -134,6 +136,7 @@ void SceneGame::Enter()
 
 void SceneGame::Exit()
 {
+	CollisionManager::ClearAll();
 	Scene::Exit();
 }
 
@@ -149,6 +152,7 @@ void SceneGame::Update(float dt)
 	if (!isGameRunning)
 		return;
 
+	CollisionManager::Update(dt);
 	Scene::Update(dt);
 
 	if (player != nullptr)
@@ -156,7 +160,7 @@ void SceneGame::Update(float dt)
 		sf::Vector2f playerPos = player->GetPosition();
 		UpdateCameraWithBounds(playerPos);
 
-		// 기존 테스트 코드들
+		// LMJ: test keys
 		if (InputMgr::GetKeyDown(sf::Keyboard::T))
 		{
 			int currentHp = player->GetCurrentHp();
@@ -176,7 +180,7 @@ void SceneGame::Update(float dt)
 			std::cout << "HP healed!!! HP: " << currentHp << " -> " << newHp << std::endl;
 		}
 
-		// 무기 테스트 코드들
+		// LMJ: weapons test key
 		if (InputMgr::GetKeyDown(sf::Keyboard::U))
 		{
 			if (weaponManager != nullptr)
@@ -195,7 +199,7 @@ void SceneGame::Update(float dt)
 			}
 		}
 
-		// 스탯 디버그 출력
+		// LMJ: Stat debug test run
 		if (InputMgr::GetKeyDown(sf::Keyboard::P))
 		{
 			const PlayerStats& stats = player->GetPlayerStats();
@@ -214,7 +218,18 @@ void SceneGame::Update(float dt)
 			std::cout << "===================" << std::endl;
 		}
 
-		// 기존 적 데미지 테스트
+		if (InputMgr::GetKeyDown(sf::Keyboard::Num1))
+		{
+			player->SetHitBoxRadius(player->GetHitBox()->GetRadius() - 2.f);
+			std::cout << "Player hitbox radius: " << player->GetHitBox()->GetRadius() << std::endl;
+		}
+		if (InputMgr::GetKeyDown(sf::Keyboard::Num2))
+		{
+			player->SetHitBoxRadius(player->GetHitBox()->GetRadius() + 2.0f);
+			std::cout << "Player hitbox radius: " << player->GetHitBox()->GetRadius() << std::endl;
+		}
+
+		// LMJ: Damage Test
 		if (InputMgr::GetKeyDown(sf::Keyboard::K))
 		{
 			if (testEnemy != nullptr && testEnemy->GetActive() && !testEnemy->IsDead())
@@ -363,4 +378,5 @@ void SceneGame::UpdateUI(float dt)
 void SceneGame::Draw(sf::RenderWindow& window)
 {
 	Scene::Draw(window);
+	CollisionManager::DrawAll(window);
 }

@@ -22,6 +22,7 @@
 #include "ResourceMgr.h"
 #include "InputMgr.h"
 #include "GameObject.h"
+#include "HitBox.h"
 #include "Scene.h"
 #include "SceneMgr.h"
 #include "SoundMgr.h"

@@ -385,7 +385,7 @@ void WeaponMgr::CheckProjectileCollisions()
 {
     if (!currentScene) return;
 
-    auto enemies = GetNearbyEnemies(2000.0f);
+    auto enemies = GetNearbyEnemies(2000.0f); // LMJ: need to adjust this part. too far away.
 
     for (auto& projectile : projectiles)
     {

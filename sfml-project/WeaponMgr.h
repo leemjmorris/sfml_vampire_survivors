@@ -89,14 +89,14 @@ struct WeaponInfo
     float area = 1.0f;
     float speed = 200.0f;
     int amount = 1;
-    float duration = 0.0f;          // LMJ: 0 = instant projectile
+    float duration = 0.0f; // LMJ: 0 = instant projectile
     int pierce = 1;
     float cooldown = 1.0f;
     float projectileInterval = 0.0f; // LMJ: Time between projectiles in same attack
     float hitboxDelay = 0.1f;
     float knockback = 1.0f;
-    int poolLimit = 50;             // LMJ: Max projectiles on screen
-    float chance = 1.0f;            // LMJ: 100% chance by default
+    int poolLimit = 50; // LMJ: Max projectiles on screen
+    float chance = 1.0f; // LMJ: 100% chance by default
     float critMulti = 2.0f;
     bool blockByWalls = true;
 

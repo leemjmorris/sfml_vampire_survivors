@@ -4,12 +4,33 @@
 #include "Animator.h"
 #include "AnimationClip.h"
 
+Enemy::Enemy(const std::string& name) : GameObject(name)
+{
+	hitBox = new EnemyHitBox(this);
+}
+
+Enemy::~Enemy()
+{
+	if (hitBox)
+	{
+		CollisionManager::UnregisterHitBox(hitBox);
+		delete hitBox;
+		hitBox = nullptr;
+	}
+}
+
 void Enemy::Init()
 {
 	animator.SetTarget(&sprite);
 
 	ANI_CLIP_MGR.Load("animations/bat1_run.csv");
 	ANI_CLIP_MGR.Load("animations/bat1_death.csv");
+
+	if (hitBox)
+	{
+		hitBox->SetCircle(hitBoxRadius);
+		hitBox->SetActive(true);
+	}
 }
 
 void Enemy::Release()
@@ -45,12 +66,17 @@ void Enemy::Update(float dt)
 	if (isDead)
 	{
 		animator.Update(dt);
+
+		if (hitBox) hitBox->SetActive(false);
 		return;
 	}
 
 	if (hp <= 0)
 	{
 		isDead = true;
+
+		if (hitBox) hitBox->SetActive(false);
+
 		animator.AddEvent("animations/bat1_death.csv", 14, [this]()
 			{
 				OnDeathAnimationComplete();
@@ -66,6 +92,11 @@ void Enemy::Update(float dt)
 
 	position += velocity * dt;
 	SetPosition(position);
+
+	if (hitBox && !isDead)
+	{
+		hitBox->UpdateTransform(sprite.getPosition());
+	}
 
 	UpdateAnimation();
 	animator.Update(dt);
@@ -111,21 +142,26 @@ void Enemy::Draw(sf::RenderWindow& window)
 
 void Enemy::TakeDamage(int damage)
 {
+	if (isDead) return;
+
 	hp -= damage;
 	if (hp < 0) hp = 0;
+	
 	sprite.setColor(sf::Color::Red);
 	sprite.setColor(sf::Color::White);
 
 	if (hp <= 0)
 	{
 		isDead = true;
-
 		sprite.setColor(sf::Color::White);
+
+		if (hitBox) hitBox->SetActive(false);
 
 		animator.AddEvent("animations/bat1_death.csv", 14, [this]() {
 			OnDeathAnimationComplete();
 			SetActive(false);
 			});
+
 		animator.Play("animations/bat1_death.csv");
 		std::cout << "testEnemy dead" << std::endl;
 	}
@@ -152,6 +188,11 @@ void Enemy::SetPosition(const sf::Vector2f& pos)
 {
 	position = pos;
 	sprite.setPosition(position);
+
+	if (hitBox)
+	{
+		hitBox->UpdateTransform(pos);
+	}
 }
 
 void Enemy::SetRotation(float angle)
@@ -181,6 +222,16 @@ void Enemy::SetOrigin(const sf::Vector2f& newOrigin)
 	origin = newOrigin;
 	sprite.setOrigin(origin);
 }
+
+void Enemy::SetHitBoxRadius(float radius)
+{
+	hitBoxRadius = radius;
+	if (hitBox)
+	{
+		hitBox->SetCircle(radius);
+	}
+}
+
 
 
 int Enemy::GetEnemyHp() const

@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject.h"
+#include "HitBox.h"
 
 class Player;
 
@@ -25,9 +26,12 @@ protected:
 
     Player* target = nullptr;
 
+    EnemyHitBox* hitBox = nullptr;
+    float hitBoxRadius = 20.f;
+
 public:
-    Enemy(const std::string& name = "Enemy") : GameObject(name) {}
-    ~Enemy() = default;
+    Enemy(const std::string& name);
+    ~Enemy();
 
     void SetPosition(const sf::Vector2f& pos) override;
     void SetRotation(float angle) override;
@@ -43,8 +47,11 @@ public:
     void Update(float dt) override;
     void Draw(sf::RenderWindow& window) override;
 
-    void TakeDamage(int damage);
+    virtual void TakeDamage(int damage);
     void FollowPlayer(Player* player);
+
+    EnemyHitBox* GetHitBox() const { return hitBox; }
+    void SetHitBoxRadius(float radius);
 
     // LMJ: Get methods
     sf::Vector2f GetPosition() const;
