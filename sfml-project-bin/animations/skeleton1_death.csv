@@ -1,0 +1,34 @@
+ID,FPS,"LoopType (0: Single, 1: Loop)",,,
+Skeleton1_death,10,"0",,,
+,,,,,
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT,FLIPX
+graphics/skeleton1_death.png,0,0,46,55,0
+graphics/skeleton1_death.png,46,0,46,55,0
+graphics/skeleton1_death.png,92,0,46,55,0
+graphics/skeleton1_death.png,138,0,46,55,0
+graphics/skeleton1_death.png,184,0,46,55,0
+graphics/skeleton1_death.png,230,0,46,55,0
+graphics/skeleton1_death.png,276,0,46,55,0
+graphics/skeleton1_death.png,322,0,46,55,0
+graphics/skeleton1_death.png,368,0,46,55,0
+graphics/skeleton1_death.png,414,0,46,55,0
+graphics/skeleton1_death.png,460,0,46,55,0
+graphics/skeleton1_death.png,506,0,46,55,0
+graphics/skeleton1_death.png,552,0,46,55,0
+graphics/skeleton1_death.png,598,0,46,55,0
+graphics/skeleton1_death.png,644,0,46,55,0
+graphics/skeleton1_death.png,690,0,46,55,0
+graphics/skeleton1_death.png,736,0,46,55,0
+graphics/skeleton1_death.png,782,0,46,55,0
+graphics/skeleton1_death.png,828,0,46,55,0
+graphics/skeleton1_death.png,874,0,46,55,0
+graphics/skeleton1_death.png,920,0,46,55,0
+graphics/skeleton1_death.png,966,0,46,55,0
+graphics/skeleton1_death.png,1012,0,46,55,0
+graphics/skeleton1_death.png,1058,0,46,55,0
+graphics/skeleton1_death.png,1104,0,46,55,0
+graphics/skeleton1_death.png,1150,0,46,55,0
+graphics/skeleton1_death.png,1196,0,46,55,0
+graphics/skeleton1_death.png,1242,0,46,55,0
+graphics/skeleton1_death.png,1288,0,46,55,0
+graphics/skeleton1_death.png,1334,0,46,55,0

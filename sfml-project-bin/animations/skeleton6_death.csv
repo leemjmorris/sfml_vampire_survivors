@@ -1,0 +1,34 @@
+ID,FPS,"LoopType (0: Single, 1: Loop)",,,
+Skeleton6_deat,10,"0",,,
+,,,,,
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT,FLIPX
+graphics/skeleton6_deat.png,0,0,56,68,0
+graphics/skeleton6_deat.png,56,0,56,68,0
+graphics/skeleton6_deat.png,112,0,56,68,0
+graphics/skeleton6_deat.png,168,0,56,68,0
+graphics/skeleton6_deat.png,224,0,56,68,0
+graphics/skeleton6_deat.png,280,0,56,68,0
+graphics/skeleton6_deat.png,336,0,56,68,0
+graphics/skeleton6_deat.png,392,0,56,68,0
+graphics/skeleton6_deat.png,448,0,56,68,0
+graphics/skeleton6_deat.png,504,0,56,68,0
+graphics/skeleton6_deat.png,560,0,56,68,0
+graphics/skeleton6_deat.png,616,0,56,68,0
+graphics/skeleton6_deat.png,672,0,56,68,0
+graphics/skeleton6_deat.png,728,0,56,68,0
+graphics/skeleton6_deat.png,784,0,56,68,0
+graphics/skeleton6_deat.png,840,0,56,68,0
+graphics/skeleton6_deat.png,896,0,56,68,0
+graphics/skeleton6_deat.png,952,0,56,68,0
+graphics/skeleton6_deat.png,1008,0,56,68,0
+graphics/skeleton6_deat.png,1064,0,56,68,0
+graphics/skeleton6_deat.png,1120,0,56,68,0
+graphics/skeleton6_deat.png,1176,0,56,68,0
+graphics/skeleton6_deat.png,1232,0,56,68,0
+graphics/skeleton6_deat.png,1288,0,56,68,0
+graphics/skeleton6_deat.png,1344,0,56,68,0
+graphics/skeleton6_deat.png,1400,0,56,68,0
+graphics/skeleton6_deat.png,1456,0,56,68,0
+graphics/skeleton6_deat.png,1512,0,56,68,0
+graphics/skeleton6_deat.png,1568,0,56,68,0
+graphics/skeleton6_deat.png,1624,0,56,68,0

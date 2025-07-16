@@ -1,0 +1,8 @@
+ID,FPS,"LoopType (0: Single, 1: Loop)		",,,
+Ghoul1_run,10,"1	",,,
+"				",,,,,
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT,"FLIPX (0:False, 1:True)"
+graphics/ghoul1_run.png,0,0,34,35,0
+graphics/ghoul1_run.png,34,0,34,35,0
+graphics/ghoul1_run.png,68,0,34,35,0
+graphics/ghoul1_run.png,102,0,34,35,0

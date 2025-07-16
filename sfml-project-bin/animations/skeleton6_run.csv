@@ -1,0 +1,8 @@
+ID,FPS,"LoopType (0: Single, 1: Loop)		",,,
+Skeleton6_run,10,"1	",,,
+"				",,,,,
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT,"FLIPX (0:False, 1:True)"
+graphics/skeleton6_run.png,0,0,35,34,0
+graphics/skeleton6_run.png,35,0,35,34,0
+graphics/skeleton6_run.png,70,0,35,34,0
+graphics/skeleton6_run.png,105,0,35,34,0
