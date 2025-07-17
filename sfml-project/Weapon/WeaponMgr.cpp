@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "WeaponMgr.h"
 #include "Player.h"
-#include "Enemy.h"
 #include "Scene.h"
 
 // Static member initialization

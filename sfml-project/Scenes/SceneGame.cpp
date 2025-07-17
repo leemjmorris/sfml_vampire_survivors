@@ -1,11 +1,8 @@
 #include "stdafx.h"
 #include "SceneGame.h"
 #include "Player.h"
-#include "Enemy.h"
-#include "MonsterSpawner.h"
 #include "TextGo.h"
 #include "TiledMap.h"
-#include "WeaponMgr.h"
 
 SceneGame::SceneGame() : Scene(SceneIds::Game)
 {

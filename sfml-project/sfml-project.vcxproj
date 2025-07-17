@@ -140,7 +140,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Characters\Enemy.cpp" />
+    <ClCompile Include="Monster\Enemy.cpp" />
     <ClCompile Include="Framework\AnimationClip.cpp" />
     <ClCompile Include="Framework\Animator.cpp" />
     <ClCompile Include="Framework\Framework.cpp" />
@@ -151,7 +151,7 @@
     <ClCompile Include="Framework\Scene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Characters\Player.cpp" />
-    <ClCompile Include="MonsterSpawner.cpp" />
+    <ClCompile Include="Monster\MonsterSpawner.cpp" />
     <ClCompile Include="Scenes\SceneGame.cpp" />
     <ClCompile Include="Framework\SceneMgr.cpp" />
     <ClCompile Include="Framework\SoundMgr.cpp" />
@@ -162,10 +162,10 @@
     <ClCompile Include="Framework\Utils.cpp" />
     <ClCompile Include="Framework\Variables.cpp" />
     <ClCompile Include="Framework\TiledMap.cpp" />
-    <ClCompile Include="WeaponMgr.cpp" />
+    <ClCompile Include="Weapon\WeaponMgr.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Characters\Enemy.h" />
+    <ClInclude Include="Monster\Enemy.h" />
     <ClInclude Include="Framework\AnimationClip.h" />
     <ClInclude Include="Framework\Animator.h" />
     <ClInclude Include="Framework\Framework.h" />
@@ -179,7 +179,7 @@
     <ClInclude Include="Framework\SpriteGo.h" />
     <ClInclude Include="Framework\Scene.h" />
     <ClInclude Include="Characters\Player.h" />
-    <ClInclude Include="MonsterSpawner.h" />
+    <ClInclude Include="Monster\MonsterSpawner.h" />
     <ClInclude Include="Scenes\SceneGame.h" />
     <ClInclude Include="Scenes\SceneDev1.h" />
     <ClInclude Include="Scenes\SceneDev2.h" />
@@ -190,7 +190,7 @@
     <ClInclude Include="Framework\Utils.h" />
     <ClInclude Include="Framework\Variables.h" />
     <ClInclude Include="Framework\TiledMap.h" />
-    <ClInclude Include="WeaponMgr.h" />
+    <ClInclude Include="Weapon\WeaponMgr.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

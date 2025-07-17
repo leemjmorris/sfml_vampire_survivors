@@ -2,7 +2,6 @@
 #include "HitBox.h"
 #include "GameObject.h"
 #include "Player.h"
-#include "Enemy.h"
 #include <algorithm>
 
 // Static member initialization

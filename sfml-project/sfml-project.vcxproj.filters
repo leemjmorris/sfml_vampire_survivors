@@ -63,7 +63,7 @@
     <ClCompile Include="Characters\Player.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Characters\Enemy.cpp">
+    <ClCompile Include="Monster\Enemy.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Scenes\SceneGame.cpp">
@@ -72,10 +72,10 @@
     <ClCompile Include="Framework\TiledMap.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="WeaponMgr.cpp">
+    <ClCompile Include="Weapon\WeaponMgr.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="MonsterSpawner.cpp">
+    <ClCompile Include="Monster\MonsterSpawner.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -143,7 +143,7 @@
     <ClInclude Include="Characters\Player.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Characters\Enemy.h">
+    <ClInclude Include="Monster\Enemy.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Scenes\SceneGame.h">
@@ -152,10 +152,10 @@
     <ClInclude Include="Framework\TiledMap.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="WeaponMgr.h">
+    <ClInclude Include="Weapon\WeaponMgr.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="MonsterSpawner.h">
+    <ClInclude Include="Monster\MonsterSpawner.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
