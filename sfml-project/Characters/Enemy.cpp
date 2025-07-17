@@ -23,8 +23,8 @@ void Enemy::Init()
 {
 	animator.SetTarget(&sprite);
 
-	ANI_CLIP_MGR.Load("animations/bat1_run.csv");
-	ANI_CLIP_MGR.Load("animations/bat1_death.csv");
+	// ANI_CLIP_MGR.Load("animations/bat1_run.csv");
+	// ANI_CLIP_MGR.Load("animations/bat1_death.csv");
 
 	if (hitBox)
 	{
@@ -61,10 +61,10 @@ void Enemy::Reset()
 
 	// LMJ: Runtime Error. Check This Part!!!!!
 	// LMJ: No more needed. But still save this part for TEST PURPOSES!
-	if (TEXTURE_MGR.Exists("graphics/sprite_bat1_run.png"))
-	{
-		animator.Play("animations/bat1_run.csv");
-	}
+	// if (TEXTURE_MGR.Exists("graphics/sprite_bat1_run.png"))
+	// {
+	//	animator.Play("animations/bat1_run.csv");
+	// }
 }
 
 void Enemy::Update(float dt)
@@ -101,13 +101,16 @@ void Enemy::Update(float dt)
 		animator.Play(deathClip);
 	}
 
-	if (target != nullptr)
+	if (target != nullptr && !isDead)
 	{
 		FollowPlayer(target);
 	}
 
-	position += velocity * dt;
-	SetPosition(position);
+	if (!isDead)
+	{
+		position += velocity * dt;
+		SetPosition(position);
+	}
 
 	if (hitBox && !isDead)
 	{
@@ -125,7 +128,7 @@ void Enemy::UpdateAnimation()
 	if (velocity.x != 0.f || velocity.y != 0.f)
 	{
 		animator.SetSpeed(1.f);
-		
+
 		if (velocity.x > 0.f && !facingRight)
 		{
 			facingRight = true;
@@ -162,8 +165,10 @@ void Enemy::TakeDamage(int damage)
 
 	hp -= damage;
 	if (hp < 0) hp = 0;
-	
+
+	// LMJ: Visual feedback for taking damage
 	sprite.setColor(sf::Color::Red);
+	// Reset color immediately (you might want to add a timer for this)
 	sprite.setColor(sf::Color::White);
 
 	if (hp <= 0)
@@ -173,13 +178,49 @@ void Enemy::TakeDamage(int damage)
 
 		if (hitBox) hitBox->SetActive(false);
 
-		animator.AddEvent("animations/bat1_death.csv", 14, [this]() {
+		// LMJ: Give experience to player when enemy dies
+		if (target)
+		{
+			target->GainExperience(expValue);
+		}
+
+		std::string deathClip = "";
+		std::string enemyName = GetName();
+
+		if (enemyName == "Bat1") deathClip = "animations/bat1_death.csv";
+		else if (enemyName == "Ghoul1") deathClip = "animations/ghoul1_death.csv";
+		else if (enemyName == "Ghoul2") deathClip = "animations/ghoul2_death.csv";
+		else if (enemyName == "Ghoul3") deathClip = "animations/ghoul3_death.csv";
+		else if (enemyName == "Skeleton1") deathClip = "animations/skeleton1_death.csv";
+		else if (enemyName == "Skeleton2") deathClip = "animations/skeleton2_death.csv";
+		else if (enemyName == "Skeleton3") deathClip = "animations/skeleton3_death.csv";
+		else if (enemyName == "Skeleton4") deathClip = "animations/skeleton4_death.csv";
+		else if (enemyName == "Skeleton5") deathClip = "animations/skeleton5_death.csv";
+		else if (enemyName == "Skeleton6") deathClip = "animations/skeleton6_death.csv";
+		else deathClip = "animations/bat1_death.csv";
+
+		if (ANI_CLIP_MGR.Exists(deathClip))
+		{
+			std::cout << "Playing death animation: " << deathClip << " for " << enemyName << std::endl;
+
+			// LMJ: Clear events and add death event
+			animator.ClearEvent();
+
+			animator.AddEvent(deathClip, 14, [this]() {
+				OnDeathAnimationComplete();
+				SetActive(false);
+				});
+
+			animator.Play(deathClip);
+		}
+		else
+		{
+			std::cout << "Death animation not found: " << deathClip << " for " << enemyName << std::endl;
 			OnDeathAnimationComplete();
 			SetActive(false);
-			});
+		}
 
-		animator.Play("animations/bat1_death.csv");
-		std::cout << "testEnemy dead" << std::endl;
+		std::cout << "Enemy dead, exp given: " << expValue << std::endl;
 	}
 }
 
@@ -195,9 +236,19 @@ void Enemy::FollowPlayer(Player* player)
 	sf::Vector2f playerPos = player->GetPosition();
 	sf::Vector2f direction = playerPos - position;
 
-	Utils::Normalize(direction);
+	// LMJ: distance check
+	float distance = Utils::Magnitude(direction);
+	if (distance < 30.0f)
+	{
+		velocity = sf::Vector2f(0.f, 0.f);
+		return;
+	}
 
+	Utils::Normalize(direction);
 	velocity = direction * speed;
+
+	// LMJ: debug check. if enemy moving.
+	// std::cout << "Enemy moving: vel(" << velocity.x << ", " << velocity.y << "), speed: " << speed << std::endl;
 }
 
 void Enemy::SetPosition(const sf::Vector2f& pos)
@@ -248,8 +299,6 @@ void Enemy::SetHitBoxRadius(float radius)
 	}
 }
 
-
-
 int Enemy::GetEnemyHp() const
 {
 	return hp;
@@ -267,16 +316,29 @@ int Enemy::GetExpValue() const
 
 void Enemy::LoadAnimations(const std::string& runAnimPath, const std::string& deathAnimPath, const std::string& runTexPath, const std::string& deathTexPath)
 {
+	// LMJ: load animations for each enemy
 	ANI_CLIP_MGR.Load(runAnimPath);
 	ANI_CLIP_MGR.Load(deathAnimPath);
 
 	std::string runTexturePath = runAnimPath;
 	std::string deathTexturePath = deathAnimPath;
 
-	// LMJ: check if .csv is there or not.
-	sprite.setTexture(TEXTURE_MGR.Get(runTexPath));
+	// LMJ: texture set
+	if (TEXTURE_MGR.Exists(runTexPath))
+	{
+		sprite.setTexture(TEXTURE_MGR.Get(runTexPath));
+	}
 
-	animator.Play(runAnimPath);
+	// LMJ: run anim play
+	if (ANI_CLIP_MGR.Exists(runAnimPath))
+	{
+		animator.Play(runAnimPath);
+		std::cout << "Playing run animation: " << runAnimPath << " for " << GetName() << std::endl;
+	}
+	else
+	{
+		std::cout << "Run animation not found: " << runAnimPath << " for " << GetName() << std::endl;
+	}
 }
 
 sf::FloatRect Enemy::GetLocalBounds() const

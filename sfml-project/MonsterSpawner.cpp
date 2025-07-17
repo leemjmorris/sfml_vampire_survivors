@@ -3,13 +3,6 @@
 #include "Player.h"
 #include "Scene.h"
 
-//MonsterInfo::MonsterInfo(MonsterType t, const std::string& n, const std::string& runAnim,
-//    const std::string& deathAnim, int hp, float speed, int damage)
-//    : type(t), name(n), runAnimationPath(runAnim), deathAnimationPath(deathAnim),
-//    baseHp(hp), baseSpeed(speed), baseDamage(damage)
-//{
-//}
-
 SpawnWave::SpawnWave(float time, MonsterType type, int count, float interval,
     const std::string& message, bool repeating)
     : triggerTime(time), monsterType(type), spawnCount(count), spawnInterval(interval),
@@ -238,9 +231,8 @@ Enemy* MonsterSpawner::CreateMonsterFromType(MonsterType type, const sf::Vector2
     monster->SetExpValue(info->expValue);
     monster->SetHitBoxRadius(info->hitBoxRadius);
 
-    // LMJ: Set target player
-    // Note: You might need to add a SetTarget method to Enemy class
-    // For now, the Enemy class already tracks the target in its Update method
+    // LMJ: *** 중요: 타겟 플레이어 설정 ***
+    monster->SetTarget(targetPlayer);
 
     return monster;
 }

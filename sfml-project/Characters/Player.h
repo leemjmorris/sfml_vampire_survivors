@@ -1,73 +1,80 @@
 #pragma once
 #include "GameObject.h"
-#include "Animator.h"
 #include "HitBox.h"
 
-class TiledMap;
 class WeaponMgr;
+class TiledMap;
 
-// Player stats structure moved here from WeaponMgr.h
+// LMJ: Player stats structure for weapon scaling
 struct PlayerStats
 {
-    float mightMultiplier = 1.0f;    // Damage multiplier
-    float areaMultiplier = 1.0f;     // Area multiplier
-    float speedMultiplier = 1.0f;    // Projectile speed multiplier
-    int amountBonus = 0;             // Additional projectiles
-    float durationMultiplier = 1.0f; // Duration multiplier
-    float cooldownMultiplier = 1.0f; // Cooldown multiplier (lower is better)
-    float luckBonus = 0.0f;          // Luck bonus for chance-based effects
-    float critChance = 0.05f;        // Base 5% crit chance
-    float critMultiplier = 2.0f;     // 2x damage on crit
+    // LMJ: Weapon stats
+    float mightMultiplier = 1.0f;      // Damage multiplier
+    float areaMultiplier = 1.0f;       // Area/size multiplier  
+    float speedMultiplier = 1.0f;      // Projectile speed multiplier
+    int amountBonus = 0;               // Additional projectiles
+    float durationMultiplier = 1.0f;   // Duration multiplier
+    float cooldownMultiplier = 1.0f;   // Cooldown multiplier (lower = faster)
+    float luckBonus = 0.0f;            // Luck bonus (0.01 = 1%)
+    float critChance = 0.05f;          // Critical hit chance (0.05 = 5%)
+    float critMultiplier = 2.0f;       // Critical damage multiplier
 
-    // Movement and survival stats
-    float moveSpeedMultiplier = 1.0f;
-    float healthMultiplier = 1.0f;
-    float expMultiplier = 1.0f;
-    float recoveryBonus = 0.0f;      // Health recovery per second
-    float armorValue = 0.0f;         // Damage reduction
-    float invincibilityBonus = 0.0f; // Additional invincibility time
+    // LMJ: Player stats
+    float moveSpeedMultiplier = 1.0f;  // Player movement speed
+    float healthMultiplier = 1.0f;     // Max health multiplier
+    float expMultiplier = 1.0f;        // Experience gain multiplier
+    float recoveryBonus = 0.0f;        // Health recovery per second
+    float armorValue = 0.0f;           // Damage reduction
+    float invincibilityBonus = 0.0f;   // Additional invincibility time
+
+    PlayerStats() = default;
 };
 
 class Player : public GameObject
 {
+private:
+    void UpdateAnimation();
+    void OnDeathAnimationComplete() { deathAnimationFinished = true; SetActive(false); }
+    void CheckMapBoundaries(sf::Vector2f& newPosition);
+
 protected:
     sf::Sprite sprite;
     Animator animator;
+    sf::Vector2f velocity{};
+    sf::Vector2f direction{};
 
-    sf::Vector2f velocity;
-    sf::Vector2f direction;
+    // LMJ: Base stats
     float baseSpeed = 200.0f;
-
     int maxHp = 100;
     int currentHp = 100;
+
+    // LMJ: Level system
     int level = 1;
     int experience = 0;
     int experienceToNextLevel = 100;
 
+    // LMJ: Combat stats
+    float invincibleTime = 0.f;
     bool facingRight = true;
     bool isDead = false;
     bool deathAnimationFinished = false;
 
-    float invincibleTime = 0.f;
-    float baseInvincibleDuration = 1.0f;
-
-    TiledMap* currentMap = nullptr;
-    float playerRadius = 32.0f;
-
-    // LMJ: Stats system
+    // LMJ: Player stats for weapon scaling
     PlayerStats playerStats;
-    WeaponMgr* weaponMgr = nullptr;
 
     // LMJ: HitBox system
     PlayerHitBox* hitBox = nullptr;
-    float hitBoxRadius = 16.f;
+    float hitBoxRadius = 20.f;
+    float playerRadius = 16.f; // For map boundary checking
 
-private:
-    void UpdateStats();
-    void ApplyStatsToAttributes();
+    // LMJ: Map reference for boundary checking
+    TiledMap* currentMap = nullptr;
+
+    // LMJ: Weapon manager reference
+    WeaponMgr* weaponMgr = nullptr;
 
 public:
-    Player(const std::string& name = "Player");
+    Player(const std::string& name);
     ~Player();
 
     void SetPosition(const sf::Vector2f& pos) override;
@@ -84,51 +91,48 @@ public:
     void Update(float dt) override;
     void Draw(sf::RenderWindow& window) override;
 
+    void TakeDamage(int damage) override;
     void HandleInput(float dir);
-    void UpdateAnimation();
-    void TakeDamage(int damage);
-    void GainExperience(int exp);
-    void LevelUp();
-    void Heal(int amount);
 
-    // Map boundary methods
-    void SetCurrentMap(TiledMap* map) { currentMap = map; }
-    void CheckMapBoundaries();
-
-    // Weapon system
-    void SetWeaponManager(WeaponMgr* mgr) { weaponMgr = mgr; }
-    WeaponMgr* GetWeaponManager() const { return weaponMgr; }
-
-    // Stats system
-    const PlayerStats& GetPlayerStats() const { return playerStats; }
-    void ModifyStats(const PlayerStats& modification); // 스탯 수정 (아이템, 버프 등)
-    void ResetStatsToBase(); // 기본 스탯으로 리셋
-
-    // Stat getters for individual values
-    float GetFinalMoveSpeed() const { return baseSpeed * playerStats.moveSpeedMultiplier; }
-    float GetFinalInvincibilityDuration() const { return baseInvincibleDuration + playerStats.invincibilityBonus; }
-    int GetFinalMaxHP() const { return static_cast<int>(maxHp * playerStats.healthMultiplier); }
-
+    // LMJ: HitBox management
     PlayerHitBox* GetHitBox() const { return hitBox; }
     void SetHitBoxRadius(float radius);
 
-    // Existing getters
+    // LMJ: Level system
+    void GainExperience(int exp);
+    void LevelUp();
+    void UpdateStats();
+    void ApplyStatsToAttributes();
+    void ModifyStats(const PlayerStats& modification);
+    void ResetStatsToBase();
+
+    // LMJ: Health system
+    void Heal(int amount);
+
+    // LMJ: Getters
+    sf::Vector2f GetPosition() const { return position; }
     sf::Vector2f GetVelocity() const { return velocity; }
     int GetCurrentHp() const { return currentHp; }
-    int GetMaxHp() const { return maxHp; }
-    int GetExperienceToNext() const { return experienceToNextLevel; }
-
-    bool IsInvincible() const { return invincibleTime > 0.f; }
+    int GetLevel() const { return level; }
+    int GetExperience() const { return experience; }
+    int GetExperienceToNextLevel() const { return experienceToNextLevel; }
+    float GetSpeed() const { return baseSpeed; }
     bool IsDead() const { return isDead; }
     bool IsDeathAnimationFinished() const { return deathAnimationFinished; }
 
-    void OnDeathAnimationComplete() { deathAnimationFinished = true; }
-    void SetSpeed(float newSpeed) { baseSpeed = newSpeed; }
-    void SetMaxHp(int newMaxHp) { maxHp = newMaxHp; }
+    // LMJ: Calculated final stats
+    int GetFinalMaxHP() const { return static_cast<int>(maxHp * playerStats.healthMultiplier); }
+    float GetFinalMoveSpeed() const { return baseSpeed * playerStats.moveSpeedMultiplier; }
+    float GetFinalInvincibilityDuration() const { return 1.0f + playerStats.invincibilityBonus; }
 
-    // Experience system getters
-    int GetExperience() const { return experience; }
-    int GetExperienceToNextLevel() const { return experienceToNextLevel; }
-    int GetLevel() const { return level; }
+    // LMJ: Stats access
+    const PlayerStats& GetPlayerStats() const { return playerStats; }
 
+    // LMJ: Map reference
+    void SetCurrentMap(TiledMap* map) { currentMap = map; }
+    TiledMap* GetCurrentMap() const { return currentMap; }
+
+    // LMJ: Weapon manager reference
+    void SetWeaponManager(WeaponMgr* mgr) { weaponMgr = mgr; }
+    WeaponMgr* GetWeaponManager() const { return weaponMgr; }
 };

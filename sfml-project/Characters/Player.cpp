@@ -142,30 +142,17 @@ void Player::Update(float dt)
 
 	// Use final move speed from stats
 	velocity = direction * GetFinalMoveSpeed();
-	position += velocity * dt;
-	SetPosition(position);
+
+	// LMJ: 새 위치 계산
+	sf::Vector2f newPosition = position + velocity * dt;
+
+	// LMJ: 맵 경계 체크 및 위치 제한
+	CheckMapBoundaries(newPosition);
 
 	// Health recovery from stats
 	if (playerStats.recoveryBonus > 0.0f && currentHp < GetFinalMaxHP())
 	{
 		Heal(static_cast<int>(playerStats.recoveryBonus * dt));
-	}
-
-	if (currentMap != nullptr)
-	{
-		CheckMapBoundaries();
-	}
-	else
-	{
-		sf::Vector2f windowSize = FRAMEWORK.GetWindowSizeF();
-		sf::FloatRect bounds = GetGlobalBounds();
-
-		if (position.x - bounds.width * 0.5f < 0) position.x = bounds.width * 0.5f;
-		if (position.x + bounds.width * 0.5f > windowSize.x) position.x = windowSize.x - bounds.width * 0.5f;
-		if (position.y - bounds.height * 0.5f < 0) position.y = bounds.height * 0.5f;
-		if (position.y + bounds.height * 0.5f > windowSize.y) position.y = windowSize.y - bounds.height * 0.5f;
-
-		SetPosition(position);
 	}
 
 	UpdateAnimation();
@@ -183,19 +170,32 @@ void Player::Update(float dt)
 	}
 }
 
-void Player::CheckMapBoundaries()
+void Player::CheckMapBoundaries(sf::Vector2f& newPosition)
 {
 	// LMJ: If map is set, check boundaries and clamp position
 	if (currentMap != nullptr)
 	{
-		sf::Vector2f clampedPos = currentMap->ClampToMapBounds(position, playerRadius);
+		sf::Vector2f clampedPos = currentMap->ClampToMapBounds(newPosition, playerRadius);
+		position = clampedPos;
+		SetPosition(position);
+	}
+	else
+	{
+		// LMJ: Window bounds as fallback
+		sf::Vector2f windowSize = FRAMEWORK.GetWindowSizeF();
+		sf::FloatRect bounds = GetGlobalBounds();
 
-		// LMJ: Only update position if it was actually clamped
-		if (clampedPos != position)
-		{
-			position = clampedPos;
-			SetPosition(position);
-		}
+		// LMJ: bound check based on size of sprite.
+		float halfWidth = bounds.width * 0.5f;
+		float halfHeight = bounds.height * 0.5f;
+
+		if (newPosition.x - halfWidth < 0) newPosition.x = halfWidth;
+		if (newPosition.x + halfWidth > windowSize.x) newPosition.x = windowSize.x - halfWidth;
+		if (newPosition.y - halfHeight < 0) newPosition.y = halfHeight;
+		if (newPosition.y + halfHeight > windowSize.y) newPosition.y = windowSize.y - halfHeight;
+
+		position = newPosition;
+		SetPosition(position);
 	}
 }
 
@@ -229,8 +229,6 @@ void Player::HandleInput(float dir)
 	{
 		Utils::Normalize(direction);
 	}
-
-	velocity = direction * baseSpeed;
 }
 
 void Player::UpdateAnimation()

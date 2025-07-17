@@ -1,7 +1,6 @@
-ID,FPS,"LoopType (0: Single, 1: Loop)",,,
-Ghoul3_death,10,"0",,,
-,,,,,
-TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT,FLIPX
+ID,FPS,LoopType (0: Single,1: Loop)
+Ghoul3_death,10,0
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT,FLIPX (0:False,1:True)
 graphics/ghoul3_death.png,0,0,44,35,0
 graphics/ghoul3_death.png,44,0,44,35,0
 graphics/ghoul3_death.png,88,0,44,35,0

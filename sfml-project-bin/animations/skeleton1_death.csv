@@ -1,7 +1,6 @@
-ID,FPS,"LoopType (0: Single, 1: Loop)",,,
-Skeleton1_death,10,"0",,,
-,,,,,
-TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT,FLIPX
+ID,FPS,LoopType (0: Single,1: Loop)
+Skeleton1_death,10,0
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT,FLIPX (0:False, 1:True)
 graphics/skeleton1_death.png,0,0,46,55,0
 graphics/skeleton1_death.png,46,0,46,55,0
 graphics/skeleton1_death.png,92,0,46,55,0

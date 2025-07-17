@@ -215,6 +215,7 @@ void WeaponMgr::InitializeWeaponDefinitions()
     weaponDefinitions.push_back(knife);
 
     definitionsInitialized = true;
+    std::cout << "WeaponMgr: Initialized weapon definitions" << std::endl;
 }
 
 void WeaponMgr::UpdatePlayerStats(const PlayerStats& stats)
@@ -229,7 +230,12 @@ void WeaponMgr::UpdatePlayerStats(const PlayerStats& stats)
 
 void WeaponMgr::AddWeapon(WeaponType type)
 {
-    if (HasWeapon(type)) return;
+    if (HasWeapon(type))
+    {
+        std::cout << "Weapon already exists, upgrading instead..." << std::endl;
+        UpgradeWeapon(type);
+        return;
+    }
 
     for (const auto& def : weaponDefinitions)
     {
@@ -253,11 +259,19 @@ void WeaponMgr::UpgradeWeapon(WeaponType type)
         weapon->CalculateFinalStats(playerStats);
         std::cout << "Upgraded " << weapon->name << " to level " << weapon->level << std::endl;
     }
+    else if (weapon)
+    {
+        std::cout << weapon->name << " is already at max level!" << std::endl;
+    }
 }
 
 void WeaponMgr::UpgradeRandomWeapon()
 {
-    if (weapons.empty()) return;
+    if (weapons.empty())
+    {
+        std::cout << "No weapons to upgrade!" << std::endl;
+        return;
+    }
 
     std::vector<WeaponInfo*> upgradeable;
     for (auto& weapon : weapons)
@@ -273,6 +287,11 @@ void WeaponMgr::UpgradeRandomWeapon()
         int randomIndex = Utils::RandomRange(0, static_cast<int>(upgradeable.size()));
         upgradeable[randomIndex]->LevelUp();
         upgradeable[randomIndex]->CalculateFinalStats(playerStats);
+        std::cout << "Randomly upgraded " << upgradeable[randomIndex]->name << std::endl;
+    }
+    else
+    {
+        std::cout << "All weapons are at max level!" << std::endl;
     }
 }
 
@@ -351,6 +370,7 @@ void WeaponMgr::AttackWithWeapon(WeaponInfo& weapon)
     }
 
     weapon.StartCooldown();
+    // std::cout << "Attacked with " << weapon.name << std::endl;
 }
 
 void WeaponMgr::CreateProjectile(const sf::Vector2f& pos, const sf::Vector2f& direction,
@@ -385,7 +405,7 @@ void WeaponMgr::CheckProjectileCollisions()
 {
     if (!currentScene) return;
 
-    auto enemies = GetNearbyEnemies(2000.0f); // LMJ: need to adjust this part. too far away.
+    auto enemies = GetNearbyEnemies(1000.0f); // LMJ: Reduced range for better performance
 
     for (auto& projectile : projectiles)
     {
@@ -531,33 +551,27 @@ std::vector<Enemy*> WeaponMgr::GetNearbyEnemies(float range) const
 
     if (!currentScene) return enemies;
 
-    // LMJ: Find all enemy game objects in the scene
-    auto allObjects = currentScene->FindGameObjects("Enemy");
-    for (GameObject* obj : allObjects)
+    // LMJ: Get all game objects and check if they're enemies
+    // LMJ: Use MonsterSpawner to get active monsters
+    auto spawnerObjects = currentScene->FindGameObjects("MonsterSpawner");
+    for (GameObject* obj : spawnerObjects)
     {
-        Enemy* enemy = dynamic_cast<Enemy*>(obj);
-        if (enemy && enemy->GetActive() && !enemy->IsDead())
+        MonsterSpawner* spawner = dynamic_cast<MonsterSpawner*>(obj);
+        if (spawner)
         {
-            float distance = Utils::Distance(GetOwnerPosition(), enemy->GetPosition());
-            if (distance <= range)
+            auto activeMonsters = spawner->GetActiveMonsters();
+            for (Enemy* enemy : activeMonsters)
             {
-                enemies.push_back(enemy);
+                if (enemy && enemy->GetActive() && !enemy->IsDead())
+                {
+                    float distance = Utils::Distance(GetOwnerPosition(), enemy->GetPosition());
+                    if (distance <= range)
+                    {
+                        enemies.push_back(enemy);
+                    }
+                }
             }
-        }
-    }
-
-    // LMJ: Also check for TestEnemy
-    auto testEnemies = currentScene->FindGameObjects("TestEnemy");
-    for (GameObject* obj : testEnemies)
-    {
-        Enemy* enemy = dynamic_cast<Enemy*>(obj);
-        if (enemy && enemy->GetActive() && !enemy->IsDead())
-        {
-            float distance = Utils::Distance(GetOwnerPosition(), enemy->GetPosition());
-            if (distance <= range)
-            {
-                enemies.push_back(enemy);
-            }
+            break; // Only need one spawner
         }
     }
 
@@ -572,5 +586,5 @@ void WeaponMgr::DamageEnemy(Enemy* enemy, int damage, float knockback)
 
     // Apply knockback (you might want to implement this in Enemy class)
     // For now, just print debug info
-    std::cout << "Enemy hit for " << damage << " damage" << std::endl;
+    // std::cout << "Enemy hit for " << damage << " damage" << std::endl;
 }

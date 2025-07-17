@@ -122,6 +122,11 @@ void SceneGame::Enter()
     if (tiledMap)
     {
         mapBounds = tiledMap->GetMapBounds();
+        // LMJ: 플레이어에게 맵 정보 전달
+        if (player)
+        {
+            player->SetCurrentMap(tiledMap);
+        }
     }
 
     // LMJ: Give player starting weapon
@@ -174,13 +179,13 @@ void SceneGame::Update(float dt)
     // LMJ: Update collision manager
     CollisionManager::Update(dt);
 
-#ifdef DEF_DEV
     // LMJ: Debug input for testing
     if (InputMgr::GetKeyDown(sf::Keyboard::F1))
     {
         if (monsterSpawner)
         {
             monsterSpawner->SpawnRandomMonster();
+            std::cout << "Spawned random monster (F1)" << std::endl;
         }
     }
 
@@ -189,6 +194,7 @@ void SceneGame::Update(float dt)
         if (weaponManager)
         {
             weaponManager->UpgradeRandomWeapon();
+            std::cout << "Upgraded random weapon (F2)" << std::endl;
         }
     }
 
@@ -197,9 +203,46 @@ void SceneGame::Update(float dt)
         if (monsterSpawner)
         {
             monsterSpawner->KillAllMonsters();
+            std::cout << "Killed all monsters (F3)" << std::endl;
         }
     }
-#endif
+
+    // LMJ: 추가 디버그 키들
+    if (InputMgr::GetKeyDown(sf::Keyboard::I))
+    {
+        if (weaponManager && !weaponManager->HasWeapon(WeaponType::Knife))
+        {
+            weaponManager->AddWeapon(WeaponType::Knife);
+            std::cout << "Added Knife weapon (I)" << std::endl;
+        }
+    }
+
+    if (InputMgr::GetKeyDown(sf::Keyboard::U))
+    {
+        if (weaponManager)
+        {
+            weaponManager->UpgradeWeapon(WeaponType::Knife);
+            std::cout << "Upgraded Knife weapon (U)" << std::endl;
+        }
+    }
+
+    if (InputMgr::GetKeyDown(sf::Keyboard::O))
+    {
+        if (player)
+        {
+            player->GainExperience(50);
+            std::cout << "Gained 50 experience (O)" << std::endl;
+        }
+    }
+
+    if (InputMgr::GetKeyDown(sf::Keyboard::P))
+    {
+        if (player)
+        {
+            player->TakeDamage(10);
+            std::cout << "Player took 10 damage (P)" << std::endl;
+        }
+    }
 }
 
 void SceneGame::Draw(sf::RenderWindow& window)
@@ -295,6 +338,42 @@ void SceneGame::UpdateUI(float dt)
         monsterCountText->SetFillColor(sf::Color::Green);
         monsterCountText->SetCharacterSize(20);
     }
+
+    // LMJ: Weapon info display
+    if (weaponManager)
+    {
+        static TextGo* weaponInfoText = nullptr;
+        if (!weaponInfoText)
+        {
+            weaponInfoText = new TextGo("fonts/DS-DIGIT.ttf", "WeaponInfo");
+            weaponInfoText->sortingLayer = SortingLayers::UI;
+            weaponInfoText->sortingOrder = 100;
+            AddGameObject(weaponInfoText);
+        }
+
+        int weaponCount = weaponManager->GetWeaponCount();
+        int projectileCount = weaponManager->GetProjectileCount();
+        weaponInfoText->SetString("Weapons: " + std::to_string(weaponCount) +
+            " | Projectiles: " + std::to_string(projectileCount));
+        weaponInfoText->SetPosition(sf::Vector2f(10.0f, 160.0f));
+        weaponInfoText->SetFillColor(sf::Color::Magenta);
+        weaponInfoText->SetCharacterSize(20);
+    }
+
+    // LMJ: Debug keys info
+    static TextGo* debugKeysText = nullptr;
+    if (!debugKeysText)
+    {
+        debugKeysText = new TextGo("fonts/DS-DIGIT.ttf", "DebugKeys");
+        debugKeysText->sortingLayer = SortingLayers::UI;
+        debugKeysText->sortingOrder = 100;
+        AddGameObject(debugKeysText);
+    }
+
+    debugKeysText->SetString("Debug: F1-Spawn F2-Upgrade F3-Kill | I-AddWeapon U-UpgradeWeapon O-Exp P-Damage");
+    debugKeysText->SetPosition(sf::Vector2f(10.0f, FRAMEWORK.GetWindowSizeF().y - 30.0f));
+    debugKeysText->SetFillColor(sf::Color(128, 128, 128));
+    debugKeysText->SetCharacterSize(16);
 }
 
 void SceneGame::CheckGameOver()

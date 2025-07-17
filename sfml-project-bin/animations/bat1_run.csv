@@ -1,6 +1,5 @@
-ID,FPS,"LoopType (0: Single, 1: Loop)		",,,
-Bat1_run,10,"1	",,,
-"				",,,,,
-TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT,"FLIPX (0:False, 1:True)"
+ID,FPS,LoopType (0: Single,1: Loop)
+Bat1_run,10,1
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT,FLIPX (0:False,1:True)
 graphics/sprite_bat1_run.png,0,0,19,21,0
 graphics/sprite_bat1_run.png,19,0,19,21,0
