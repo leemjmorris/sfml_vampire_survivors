@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "Animator.h"
 #include "AnimationClip.h"
+#include "MonsterSpawner.h"
 
 Enemy::Enemy(const std::string& name) : GameObject(name)
 {
@@ -22,9 +23,6 @@ Enemy::~Enemy()
 void Enemy::Init()
 {
 	animator.SetTarget(&sprite);
-
-	// ANI_CLIP_MGR.Load("animations/bat1_run.csv");
-	// ANI_CLIP_MGR.Load("animations/bat1_death.csv");
 
 	if (hitBox)
 	{
@@ -58,13 +56,6 @@ void Enemy::Reset()
 		sf::Vector2f windowSize = FRAMEWORK.GetWindowSizeF();
 		SetPosition(sf::Vector2f(windowSize.x * 0.3f, windowSize.y * 0.3f));
 	}
-
-	// LMJ: Runtime Error. Check This Part!!!!!
-	// LMJ: No more needed. But still save this part for TEST PURPOSES!
-	// if (TEXTURE_MGR.Exists("graphics/sprite_bat1_run.png"))
-	// {
-	//	animator.Play("animations/bat1_run.csv");
-	// }
 }
 
 void Enemy::Update(float dt)
@@ -236,19 +227,68 @@ void Enemy::FollowPlayer(Player* player)
 	sf::Vector2f playerPos = player->GetPosition();
 	sf::Vector2f direction = playerPos - position;
 
-	// LMJ: distance check
-	float distance = Utils::Magnitude(direction);
-	if (distance < 30.0f)
+	float distanceToPlayer = Utils::Magnitude(direction);
+	if (distanceToPlayer < 30.0f)
 	{
 		velocity = sf::Vector2f(0.f, 0.f);
 		return;
 	}
 
 	Utils::Normalize(direction);
-	velocity = direction * speed;
 
-	// LMJ: debug check. if enemy moving.
+	sf::Vector2f avoidanceForce = CalculateAvoidanceForce();
+
+	// LMJ: follow target and avoid.
+	sf::Vector2f finalDirection = direction + avoidanceForce;
+	Utils::Normalize(finalDirection);
+
+	velocity = finalDirection * speed;
+
 	// std::cout << "Enemy moving: vel(" << velocity.x << ", " << velocity.y << "), speed: " << speed << std::endl;
+}
+
+sf::Vector2f Enemy::CalculateAvoidanceForce()
+{
+	sf::Vector2f avoidanceForce(0.f, 0.f);
+
+	// LMJ: monster info from monsterspawner.
+	if (spawnerRef)
+	{
+		auto otherMonsters = spawnerRef->GetActiveMonsters();
+
+		for (const Enemy* other : otherMonsters)
+		{
+			if (other == this || !other || !other->GetActive() || other->IsDead())
+				continue;
+
+			sf::Vector2f toOther = other->GetPosition() - position;
+			float distance = Utils::Magnitude(toOther);
+
+			// LMJ: distance check to avoid collision
+			if (distance < avoidanceRadius && distance > 0.1f)
+			{
+				// LMJ: closer stronger
+				float avoidanceStrength = (avoidanceRadius - distance) / avoidanceRadius;
+				avoidanceStrength *= avoidanceForceMultiplier;
+
+				// LMJ: to oposite direction
+				sf::Vector2f awayDirection = -toOther;
+				Utils::Normalize(awayDirection);
+
+				avoidanceForce += awayDirection * avoidanceStrength;
+			}
+		}
+	}
+
+	// LMJ: max limit of force
+	float maxAvoidanceForce = 1.0f;
+	if (Utils::Magnitude(avoidanceForce) > maxAvoidanceForce)
+	{
+		Utils::Normalize(avoidanceForce);
+		avoidanceForce *= maxAvoidanceForce;
+	}
+
+	return avoidanceForce;
 }
 
 void Enemy::SetPosition(const sf::Vector2f& pos)
@@ -316,20 +356,20 @@ int Enemy::GetExpValue() const
 
 void Enemy::LoadAnimations(const std::string& runAnimPath, const std::string& deathAnimPath, const std::string& runTexPath, const std::string& deathTexPath)
 {
-	// LMJ: load animations for each enemy
+	// LMJ: animation load for each every monsters
 	ANI_CLIP_MGR.Load(runAnimPath);
 	ANI_CLIP_MGR.Load(deathAnimPath);
 
 	std::string runTexturePath = runAnimPath;
 	std::string deathTexturePath = deathAnimPath;
 
-	// LMJ: texture set
+	// LMJ: texture setting
 	if (TEXTURE_MGR.Exists(runTexPath))
 	{
 		sprite.setTexture(TEXTURE_MGR.Get(runTexPath));
 	}
 
-	// LMJ: run anim play
+	// LMJ: Run animation play
 	if (ANI_CLIP_MGR.Exists(runAnimPath))
 	{
 		animator.Play(runAnimPath);

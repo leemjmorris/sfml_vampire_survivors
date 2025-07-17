@@ -138,9 +138,9 @@ void SceneGame::Enter()
     // LMJ: Configure monster spawner
     if (monsterSpawner)
     {
-        monsterSpawner->SetMaxMonsters(30);
+        monsterSpawner->SetMaxMonsters(500);
         monsterSpawner->SetSpawnDistance(600.0f);
-        monsterSpawner->SetBaseSpawnInterval(1.5f);
+        monsterSpawner->SetBaseSpawnInterval(0.f);
     }
 
     // LMJ: Reset game state

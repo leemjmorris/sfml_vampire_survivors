@@ -74,8 +74,8 @@ private:
     std::vector<MonsterInfo> monsterDefinitions;
     std::vector<SpawnWave> spawnWaves;
 
-    int maxMonstersOnScreen = 50;
-    float baseSpawnInterval = 2.f;
+    int maxMonstersOnScreen = 500;
+    float baseSpawnInterval = 0.f;
     float currentSpawnTimer = 0.f;
 
     float gameTime = 0.f;

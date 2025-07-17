@@ -3,12 +3,16 @@
 #include "HitBox.h"
 
 class Player;
+class MonsterSpawner;
 
-class Enemy :  public GameObject
+class Enemy : public GameObject
 {
 private:
     void UpdateAnimation();
     void OnDeathAnimationComplete() { SetActive(false); }
+
+    // LMJ: 몬스터 겹침 방지 시스템
+    sf::Vector2f CalculateAvoidanceForce();
 
 protected:
     sf::Sprite sprite;
@@ -28,6 +32,11 @@ protected:
 
     EnemyHitBox* hitBox = nullptr;
     float hitBoxRadius = 20.f;
+
+    // LMJ: 몬스터 회피 시스템 관련 변수들
+    MonsterSpawner* spawnerRef = nullptr;  // MonsterSpawner 참조
+    float avoidanceRadius = 40.0f;         // 회피 감지 거리
+    float avoidanceForceMultiplier = 0.5f; // 회피력 강도
 
 public:
     Enemy(const std::string& name);
@@ -76,6 +85,8 @@ public:
     void SetTarget(Player* player) { target = player; }
     Player* GetTarget() const { return target; }
 
-
+    // LMJ: Monster Collision
+    void SetSpawnerReference(MonsterSpawner* spawner) { spawnerRef = spawner; }
+    void SetAvoidanceRadius(float radius) { avoidanceRadius = radius; }
+    void SetAvoidanceForce(float force) { avoidanceForceMultiplier = force; }
 };
-

@@ -64,6 +64,8 @@ public:
     void Draw(sf::RenderWindow& window);
     void SetDebugColor(const sf::Color& color);
 
+
+
 private:
     sf::Vector2f offset; // Offset from owner's position
     sf::Color debugColor;
@@ -125,6 +127,7 @@ public:
         // Enemies can collide with players and projectiles
         AddCollisionLayer(HitBoxType::Player);
         AddCollisionLayer(HitBoxType::Projectile);
+        AddCollisionLayer(HitBoxType::Enemy);
         SetDebugColor(sf::Color::Red);
     }
 };

@@ -121,31 +121,31 @@ void MonsterSpawner::InitializeMonsterDefinitions()
         case MonsterType::Bat1:
         case MonsterType::Ghoul1:
         case MonsterType::Ghoul2:
-            monster.spawnWeight = 3.0f;  // Common early monsters
+            monster.spawnWeight = 5.0f;  // Common early monsters
             monster.minGameTime = 0;
-            monster.maxSimultaneous = 15;
+            monster.maxSimultaneous = 50;
             break;
 
         case MonsterType::Ghoul3:
         case MonsterType::Skeleton1:
         case MonsterType::Skeleton2:
-            monster.spawnWeight = 2.0f;  // Mid-game monsters
+            monster.spawnWeight = 3.0f;  // Mid-game monsters
             monster.minGameTime = 60;    // After 1 minute
-            monster.maxSimultaneous = 10;
+            monster.maxSimultaneous = 30;
             break;
 
         case MonsterType::Skeleton3:
         case MonsterType::Skeleton4:
             monster.spawnWeight = 1.5f;  // Late-game monsters
             monster.minGameTime = 120;   // After 2 minutes
-            monster.maxSimultaneous = 8;
+            monster.maxSimultaneous = 15;
             break;
 
         case MonsterType::Skeleton5:
         case MonsterType::Skeleton6:
             monster.spawnWeight = 1.0f;  // Elite monsters
             monster.minGameTime = 180;   // After 3 minutes
-            monster.maxSimultaneous = 5;
+            monster.maxSimultaneous = 10;
             break;
         }
     }
@@ -157,8 +157,8 @@ void MonsterSpawner::InitializeDefaultWaves()
     spawnWaves.clear();
 
     // LMJ: Early game waves
-    spawnWaves.push_back(SpawnWave(30.0f, MonsterType::Bat1, 5, 0.5f, "Bat Swarm Incoming!", false));
-    spawnWaves.push_back(SpawnWave(90.0f, MonsterType::Ghoul1, 8, 0.3f, "Ghoul Pack Attack!", false));
+    spawnWaves.push_back(SpawnWave(30.0f, MonsterType::Bat1, 50, 0.5f, "Bat Swarm Incoming!", false));
+    spawnWaves.push_back(SpawnWave(90.0f, MonsterType::Ghoul1, 50, 0.3f, "Ghoul Pack Attack!", false));
 
     // LMJ: Mid game waves  
     spawnWaves.push_back(SpawnWave(150.0f, MonsterType::Skeleton1, 6, 0.8f, "Skeleton Warriors Rise!", false));
@@ -231,8 +231,13 @@ Enemy* MonsterSpawner::CreateMonsterFromType(MonsterType type, const sf::Vector2
     monster->SetExpValue(info->expValue);
     monster->SetHitBoxRadius(info->hitBoxRadius);
 
-    // LMJ: *** 중요: 타겟 플레이어 설정 ***
+    // LMJ: Target player
     monster->SetTarget(targetPlayer);
+
+    // LMJ: avoidance system
+    monster->SetSpawnerReference(this);
+    monster->SetAvoidanceRadius(45.f);
+    monster->SetAvoidanceForce(0.6f);
 
     return monster;
 }
@@ -298,16 +303,41 @@ sf::Vector2f MonsterSpawner::GetRandomSpawnPosition() const
     if (!targetPlayer) return sf::Vector2f(0.0f, 0.0f);
 
     sf::Vector2f playerPos = targetPlayer->GetPosition();
+    sf::Vector2f windowSize = FRAMEWORK.GetWindowSizeF();
 
-    // LMJ: Generate random angle and spawn at fixed distance
-    float angle = Utils::RandomRange(0.0f, 360.0f);
-    float radians = Utils::DegreeToRadian(angle);
+    float screenLeft = playerPos.x - windowSize.x * 0.5f;
+    float screenRight = playerPos.x + windowSize.x * 0.5f;
+    float screenTop = playerPos.y - windowSize.y * 0.5f;
+    float screenBottom = playerPos.y - windowSize.y * 0.5f;
 
-    sf::Vector2f offset;
-    offset.x = std::cos(radians) * spawnDistance;
-    offset.y = std::sin(radians) * spawnDistance;
+    float offscreenMargin = 100.f;
 
-    return playerPos + offset;
+    int side = Utils::RandomRange(0, 4);
+    sf::Vector2f spawnPos;
+
+    switch (side)
+    {
+    case 0: // LMJ: top
+        spawnPos.x = Utils::RandomRange(screenLeft - offscreenMargin, screenRight + offscreenMargin);
+        spawnPos.y = screenTop - offscreenMargin - Utils::RandomRange(0.0f, 50.0f);
+        break;
+
+    case 1: // LMJ: bottom
+        spawnPos.x = Utils::RandomRange(screenLeft - offscreenMargin, screenRight + offscreenMargin);
+        spawnPos.y = screenBottom + offscreenMargin + Utils::RandomRange(0.0f, 50.0f);
+        break;
+
+    case 2: // LMJ: left
+        spawnPos.x = screenLeft - offscreenMargin - Utils::RandomRange(0.0f, 50.0f);
+        spawnPos.y = Utils::RandomRange(screenTop - offscreenMargin, screenBottom + offscreenMargin);
+        break;
+
+    case 3: // LMJ: right
+        spawnPos.x = screenRight + offscreenMargin + Utils::RandomRange(0.0f, 50.0f);
+        spawnPos.y = Utils::RandomRange(screenTop - offscreenMargin, screenBottom + offscreenMargin);
+        break;
+    }
+    return spawnPos;
 }
 
 bool MonsterSpawner::IsValidSpawnPosition(const sf::Vector2f& pos) const
