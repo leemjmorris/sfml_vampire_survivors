@@ -119,28 +119,27 @@ void MonsterSpawner::InitializeMonsterDefinitions()
         switch (monster.type)
         {
         case MonsterType::Bat1:
-        case MonsterType::Ghoul1:
-        case MonsterType::Ghoul2:
             monster.spawnWeight = 5.0f;  // Common early monsters
             monster.minGameTime = 0;
             monster.maxSimultaneous = 50;
             break;
-
+        case MonsterType::Ghoul1:
+        case MonsterType::Ghoul2:
         case MonsterType::Ghoul3:
-        case MonsterType::Skeleton1:
-        case MonsterType::Skeleton2:
             monster.spawnWeight = 3.0f;  // Mid-game monsters
             monster.minGameTime = 60;    // After 1 minute
             monster.maxSimultaneous = 30;
             break;
 
+        case MonsterType::Skeleton1:
+        case MonsterType::Skeleton2:
         case MonsterType::Skeleton3:
-        case MonsterType::Skeleton4:
             monster.spawnWeight = 1.5f;  // Late-game monsters
             monster.minGameTime = 120;   // After 2 minutes
             monster.maxSimultaneous = 15;
             break;
 
+        case MonsterType::Skeleton4:
         case MonsterType::Skeleton5:
         case MonsterType::Skeleton6:
             monster.spawnWeight = 1.0f;  // Elite monsters
@@ -157,7 +156,7 @@ void MonsterSpawner::InitializeDefaultWaves()
     spawnWaves.clear();
 
     // LMJ: Early game waves
-    spawnWaves.push_back(SpawnWave(30.0f, MonsterType::Bat1, 50, 0.5f, "Bat Swarm Incoming!", false));
+    spawnWaves.push_back(SpawnWave(30.0f, MonsterType::Bat1, 150, 0.5f, "Bat Swarm Incoming!", false));
     spawnWaves.push_back(SpawnWave(90.0f, MonsterType::Ghoul1, 50, 0.3f, "Ghoul Pack Attack!", false));
 
     // LMJ: Mid game waves  
@@ -165,7 +164,7 @@ void MonsterSpawner::InitializeDefaultWaves()
     spawnWaves.push_back(SpawnWave(210.0f, MonsterType::Ghoul2, 10, 0.2f, "Ghoul Horde!", false));
 
     // LMJ: Late game waves
-    spawnWaves.push_back(SpawnWave(270.0f, MonsterType::Skeleton3, 4, 1.0f, "Elite Skeletons Awaken!", false));
+    spawnWaves.push_back(SpawnWave(240.0f, MonsterType::Skeleton3, 4, 1.0f, "Elite Skeletons Awaken!", false));
 
     // LMJ: Repeating waves for sustained difficulty
     spawnWaves.push_back(SpawnWave(60.0f, MonsterType::Bat1, 3, 0.3f, "", true));  // Every minute
@@ -308,9 +307,9 @@ sf::Vector2f MonsterSpawner::GetRandomSpawnPosition() const
     float screenLeft = playerPos.x - windowSize.x * 0.5f;
     float screenRight = playerPos.x + windowSize.x * 0.5f;
     float screenTop = playerPos.y - windowSize.y * 0.5f;
-    float screenBottom = playerPos.y - windowSize.y * 0.5f;
+    float screenBottom = playerPos.y + windowSize.y * 0.5f;
 
-    float offscreenMargin = 100.f;
+    float offscreenMargin = 500.f;
 
     int side = Utils::RandomRange(0, 4);
     sf::Vector2f spawnPos;
