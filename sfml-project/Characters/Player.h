@@ -116,8 +116,6 @@ public:
     sf::Vector2f GetVelocity() const { return velocity; }
     int GetCurrentHp() const { return currentHp; }
     int GetMaxHp() const { return maxHp; }
-    int GetLevel() const { return level; }
-    int GetExperience() const { return experience; }
     int GetExperienceToNext() const { return experienceToNextLevel; }
 
     bool IsInvincible() const { return invincibleTime > 0.f; }
@@ -127,4 +125,10 @@ public:
     void OnDeathAnimationComplete() { deathAnimationFinished = true; }
     void SetSpeed(float newSpeed) { baseSpeed = newSpeed; }
     void SetMaxHp(int newMaxHp) { maxHp = newMaxHp; }
+
+    // Experience system getters
+    int GetExperience() const { return experience; }
+    int GetExperienceToNextLevel() const { return experienceToNextLevel; }
+    int GetLevel() const { return level; }
+
 };

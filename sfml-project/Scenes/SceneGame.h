@@ -7,14 +7,15 @@ class Enemy;
 class TextGo;
 class TiledMap;
 class WeaponMgr;
+class MonsterSpawner;
 
 class SceneGame : public Scene
 {
 protected:
 	Player* player = nullptr;
-	Enemy* testEnemy = nullptr;
-	TiledMap* tiledMap = nullptr; // LMJ: Tiled map for background
+	TiledMap* tiledMap = nullptr;
 	WeaponMgr* weaponManager = nullptr;
+	MonsterSpawner* monsterSpawner = nullptr;
 
 	TextGo* textHp = nullptr;
 	TextGo* textLevel = nullptr;
@@ -22,7 +23,7 @@ protected:
 	TextGo* textTimer = nullptr;
 
 	sf::Vector2i mouse;
-	float gameTimer = 300.f; // LMJ: [BEFORE] 30min -> [NOW] 5min.
+	float gameTimer = 300.f; // LMJ: 5 minutes game duration
 	bool isGameRunning = true;
 
 	// LMJ: Map boundaries for camera constraint
@@ -32,7 +33,7 @@ private:
 	void UpdateGameTimer(float dt);
 	void UpdateUI(float dt);
 	void CheckGameOver();
-	void UpdateCameraWithBounds(const sf::Vector2f& playerPos); // LMJ: Camera boundary checking
+	void UpdateCameraWithBounds(const sf::Vector2f& playerPos);
 
 public:
 	SceneGame();

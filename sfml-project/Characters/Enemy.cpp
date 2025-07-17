@@ -43,18 +43,24 @@ void Enemy::Reset()
 	sortingOrder = 15;
 
 	// LMJ: Will this affect all the other monsters? I think so... Test this part when we add another monsters.
-	speed = 100.f;
-	hp = 50;
-	damage = 10;
-	expValue = 10;
+	// LMJ: Yes this affects the base stats. Changed reset baseStats only if they are in "IF" conditions.
+	if (speed <= 0) speed = 100.f;
+	if (hp <= 0) hp = 50;
+	if (damage <= 0) damage = 10;
+	if (expValue <= 0) expValue = 10;
 
 	SetOrigin(Origins::MC);
 
 	// LMJ: Temporary Spawn Location.
-	sf::Vector2f windowSize = FRAMEWORK.GetWindowSizeF();
-	SetPosition(sf::Vector2f(windowSize.x * 0.3f, windowSize.y * 0.3f));
+	// LMJ: Now only spawned this location when "if" happens
+	if (position.x == 0 && position.y == 0)
+	{
+		sf::Vector2f windowSize = FRAMEWORK.GetWindowSizeF();
+		SetPosition(sf::Vector2f(windowSize.x * 0.3f, windowSize.y * 0.3f));
+	}
 
 	// LMJ: Runtime Error. Check This Part!!!!!
+	// LMJ: No more needed. But still save this part for TEST PURPOSES!
 	if (TEXTURE_MGR.Exists("graphics/sprite_bat1_run.png"))
 	{
 		animator.Play("animations/bat1_run.csv");
@@ -74,15 +80,25 @@ void Enemy::Update(float dt)
 	if (hp <= 0)
 	{
 		isDead = true;
-
 		if (hitBox) hitBox->SetActive(false);
 
-		animator.AddEvent("animations/bat1_death.csv", 14, [this]()
+		std::string currentClip = animator.GetCurrentClipId();
+		std::string deathClip = currentClip;
+
+		size_t runPos = deathClip.find("_run");
+		if (runPos != std::string::npos)
+		{
+			deathClip.replace(runPos, 4, "_death");
+		}
+		else { return; }
+
+		// LMJ: Set death animation event
+		animator.AddEvent(deathClip, 14, [this]()
 			{
 				OnDeathAnimationComplete();
 			});
 
-		animator.Play("animations/bat1_death.csv");
+		animator.Play(deathClip);
 	}
 
 	if (target != nullptr)
@@ -247,6 +263,20 @@ int Enemy::GetEnemyDamage() const
 int Enemy::GetExpValue() const
 {
 	return expValue;
+}
+
+void Enemy::LoadAnimations(const std::string& runAnimPath, const std::string& deathAnimPath, const std::string& runTexPath, const std::string& deathTexPath)
+{
+	ANI_CLIP_MGR.Load(runAnimPath);
+	ANI_CLIP_MGR.Load(deathAnimPath);
+
+	std::string runTexturePath = runAnimPath;
+	std::string deathTexturePath = deathAnimPath;
+
+	// LMJ: check if .csv is there or not.
+	sprite.setTexture(TEXTURE_MGR.Get(runTexPath));
+
+	animator.Play(runAnimPath);
 }
 
 sf::FloatRect Enemy::GetLocalBounds() const

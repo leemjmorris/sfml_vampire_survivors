@@ -151,6 +151,7 @@
     <ClCompile Include="Framework\Scene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Characters\Player.cpp" />
+    <ClCompile Include="MonsterSpawner.cpp" />
     <ClCompile Include="Scenes\SceneGame.cpp" />
     <ClCompile Include="Framework\SceneMgr.cpp" />
     <ClCompile Include="Framework\SoundMgr.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="Framework\SpriteGo.h" />
     <ClInclude Include="Framework\Scene.h" />
     <ClInclude Include="Characters\Player.h" />
+    <ClInclude Include="MonsterSpawner.h" />
     <ClInclude Include="Scenes\SceneGame.h" />
     <ClInclude Include="Scenes\SceneDev1.h" />
     <ClInclude Include="Scenes\SceneDev2.h" />

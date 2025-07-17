@@ -59,6 +59,7 @@ public:
     int GetEnemyHp() const;
     int GetEnemyDamage() const;
     int GetExpValue() const;
+    float GetSpeed() const { return speed; }
 
     // LMJ: Set methods
     void SetSpeed(float newSpeed) { speed = newSpeed; }
@@ -66,10 +67,15 @@ public:
     void SetDamage(int newDamage) { damage = newDamage; }
     void SetExpValue(int newExpValue) { expValue = newExpValue; }
 
-    // LMJ: Map boundary check methods
     // LMJ: Animation methods
     bool IsDead() const { return isDead; }
     bool IsDeathAnimationFinished() const { return deathAnimationFinished; }
-    // LMJ: After adding Object Class, EXP drop related methods needed
+
+    // LMJ: Monster Spawner implement
+    void LoadAnimations(const std::string& runAnimPath, const std::string& deathAnimPath, const std::string& runTexPath, const std::string& deathTexPath);
+    void SetTarget(Player* player) { target = player; }
+    Player* GetTarget() const { return target; }
+
+
 };
 
