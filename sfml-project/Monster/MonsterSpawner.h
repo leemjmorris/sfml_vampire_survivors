@@ -91,6 +91,10 @@ private:
     float monsterUpdateTimer = 0.f;
     float monsterUpdateInterval = 1.0f; // LMJ: 1초마다 정리 작업
 
+    float wraparoundMargin = 150.f;
+    float wraparoundCheckInterval = 0.5f;
+    float lastWraparoundCheck = 0.f;
+
     // LMJ: Private helper methods
     void InitializeMonsterDefinitions();
     void InitializeDefaultWaves();
@@ -149,4 +153,9 @@ public:
     // LMJ: Spawn positioning
     sf::Vector2f GetRandomSpawnPosition() const;
     bool IsValidSpawnPosition(const sf::Vector2f& pos) const;
+
+    // LMJ: Re-placing monsters
+    void CheckMonsterWraparound(float dt);
+    void WrapAroundMonster(Enemy* monster, const sf::Vector2f& playerPos, const sf::Vector2f& windowSize);
+    sf::Vector2f GetWraparoundPosition(const sf::Vector2f& monsterPos, const sf::Vector2f& playerPos, const sf::Vector2f& windowSize);
 };

@@ -309,7 +309,7 @@ sf::Vector2f MonsterSpawner::GetRandomSpawnPosition() const
     float screenTop = playerPos.y - windowSize.y * 0.5f;
     float screenBottom = playerPos.y + windowSize.y * 0.5f;
 
-    float offscreenMargin = 500.f;
+    float offscreenMargin = 300.f;
 
     int side = Utils::RandomRange(0, 4);
     sf::Vector2f spawnPos;
@@ -379,8 +379,14 @@ void MonsterSpawner::RemoveDistantMonsters()
         if (monster && monster->GetActive())
         {
             float distance = Utils::Distance(playerPos, monster->GetPosition());
-            if (distance > despawnDistance)
+
+            // LMJ: Only erase monsters that are way too far
+            float reallyFarDistance = despawnDistance * 3.0f;
+
+            if (distance > reallyFarDistance)
             {
+                std::cout << "Removing monster that's really far away: " << distance << std::endl;
+
                 // LMJ: Remove from scene and our tracking
                 if (currentScene)
                 {
@@ -533,4 +539,85 @@ void MonsterSpawner::AddSpawnWave(const SpawnWave& wave)
 {
     spawnWaves.push_back(wave);
     waveTriggered.push_back(false);
+}
+
+void MonsterSpawner::CheckMonsterWraparound(float dt)
+{
+    if (!targetPlayer) return;
+
+    lastWraparoundCheck += dt;
+    if (lastWraparoundCheck < wraparoundCheckInterval) return;
+
+    lastWraparoundCheck = 0.f;
+
+    sf::Vector2f playerPos = targetPlayer->GetPosition();
+    sf::Vector2f windowSize = FRAMEWORK.GetWindowSizeF();
+
+    // LMJ: calculating window bounds;
+    float screenLeft = playerPos.x - windowSize.x * 0.5f;
+    float screenRight = playerPos.x + windowSize.x * 0.5f;
+    float screenTop = playerPos.y - windowSize.y * 0.5f;
+    float screenBottom = playerPos.y + windowSize.y * 0.5f;
+
+    for (Enemy* monster : activeMonsters)
+    {
+        if (!monster || !monster->GetActive() || monster->IsDead()) continue;
+
+        sf::Vector2f monsterPos = monster->GetPosition();
+        bool needsWraparound = false;
+
+        // LMJ: check if monsters are out
+        if (monsterPos.x < screenLeft - wraparoundMargin ||
+            monsterPos.x > screenRight + wraparoundMargin ||
+            monsterPos.y < screenTop - wraparoundMargin ||
+            monsterPos.y > screenBottom + wraparoundMargin)
+        {
+            needsWraparound = true;
+        }
+
+        if (needsWraparound)
+        {
+            WrapAroundMonster(monster, playerPos, windowSize);
+        }
+    }
+}
+
+void MonsterSpawner::WrapAroundMonster(Enemy* monster, const sf::Vector2f& playerPos, const sf::Vector2f& windowSize)
+{
+    if (!monster) return;
+    sf::Vector2f newPosition = GetWraparoundPosition(monster->GetPosition(), playerPos, windowSize);
+    monster->SetPosition(newPosition);
+}
+
+sf::Vector2f MonsterSpawner::GetWraparoundPosition(const sf::Vector2f& monsterPos, const sf::Vector2f& playerPos, const sf::Vector2f& windowSize)
+{
+    sf::Vector2f newPos = monsterPos;
+
+    float screenLeft = playerPos.x - windowSize.x * 0.5f;
+    float screenRight = playerPos.x + windowSize.x * 0.5f;
+    float screenTop = playerPos.y - windowSize.y * 0.5f;
+    float screenBottom = playerPos.y + windowSize.y * 0.5f;
+
+    if (monsterPos.x < screenLeft - wraparoundMargin)
+    {
+        newPos.x = screenRight + Utils::RandomRange(50.0f, 100.0f);
+        newPos.y = Utils::RandomRange(screenTop, screenBottom);
+    }
+    else if (monsterPos.x > screenRight + wraparoundMargin)
+    {
+        newPos.x = screenLeft - Utils::RandomRange(50.0f, 100.0f);
+        newPos.y = Utils::RandomRange(screenTop, screenBottom);
+    }
+
+    if (monsterPos.y < screenTop - wraparoundMargin)
+    {
+        newPos.y = screenBottom + Utils::RandomRange(50.0f, 100.0f);
+        newPos.x = Utils::RandomRange(screenLeft, screenRight);
+    }
+    else if (monsterPos.y > screenBottom + wraparoundMargin)
+    {
+        newPos.y = screenTop - Utils::RandomRange(50.0f, 100.0f);
+        newPos.x = Utils::RandomRange(screenLeft, screenRight);
+    }
+    return newPos;
 }
