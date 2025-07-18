@@ -9,7 +9,7 @@ class ExpOrb : public GameObject
 private:
     sf::Sprite sprite;
     int expValue = 10;
-    float attractRadius = 50.0f;
+    float attractRadius = 70.0f;
     float attractSpeed = 250.0f;
     bool isBeingAttracted = false;
     Player* target = nullptr;
