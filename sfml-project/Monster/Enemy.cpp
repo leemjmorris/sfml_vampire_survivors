@@ -49,6 +49,8 @@ void Enemy::Reset()
 
 	SetOrigin(Origins::MC);
 
+	isNotShown = false;
+
 	// LMJ: Temporary Spawn Location.
 	// LMJ: Now only spawned this location when "if" happens
 	if (position.x == 0 && position.y == 0)
@@ -94,6 +96,9 @@ void Enemy::Update(float dt)
 
 	if (target != nullptr && !isDead)
 	{
+		UpdateWraparoundStatus();
+		HandleWraparound();
+
 		FollowPlayer(target);
 	}
 
@@ -236,9 +241,8 @@ void Enemy::FollowPlayer(Player* player)
 
 	Utils::Normalize(direction);
 
-	sf::Vector2f avoidanceForce = CalculateAvoidanceForce();
-
 	// LMJ: follow target and avoid.
+	sf::Vector2f avoidanceForce = CalculateAvoidanceForce();
 	sf::Vector2f finalDirection = direction + avoidanceForce;
 	Utils::Normalize(finalDirection);
 
@@ -379,6 +383,101 @@ void Enemy::LoadAnimations(const std::string& runAnimPath, const std::string& de
 	{
 		std::cout << "Run animation not found: " << runAnimPath << " for " << GetName() << std::endl;
 	}
+}
+
+void Enemy::UpdateWraparoundStatus()
+{
+	if (!target) return;
+
+	bool currentlyOnScreen = IsOnScreen();
+
+	if (currentlyOnScreen && isNotShown)
+	{
+		isNotShown = false;
+	}
+	else if (!currentlyOnScreen && isNotShown)
+	{
+		isNotShown = true;
+	}
+}
+
+void Enemy::HandleWraparound()
+{
+	if (!ShouldWrapAround()) return;
+
+	sf::Vector2f currentPos = GetPosition();
+	sf::Vector2f wraparoundPos = GetWraparoundPosition();
+
+	if (Utils::Distance(currentPos, wraparoundPos) > 10.f)
+	{
+		SetPosition(wraparoundPos);
+	}
+}
+
+bool Enemy::IsOnScreen() const
+{
+	if (!target) return false;
+
+	sf::Vector2f windowSize = FRAMEWORK.GetWindowSizeF();
+	sf::Vector2f myPos = GetPosition();
+	sf::Vector2f playerPos = target->GetPosition();
+
+	// LMJ: calculate window boundary based on player and buffer.
+	float leftBound = playerPos.x - windowSize.x * 0.5f - wraparoundBuffer;
+	float rightBound = playerPos.x + windowSize.x * 0.5f + wraparoundBuffer;
+	float topBound = playerPos.y - windowSize.y * 0.5f - wraparoundBuffer;
+	float bottomBound = playerPos.y + windowSize.y * 0.5f + wraparoundBuffer;
+
+	return (myPos.x >= leftBound && myPos.x <= rightBound &&
+		myPos.y >= topBound && myPos.y <= bottomBound);
+}
+
+sf::Vector2f Enemy::GetWraparoundPosition() const
+{
+	if (!target) return GetPosition(); // LMJ: no player, get position
+
+	sf::Vector2f windowSize = FRAMEWORK.GetWindowSizeF();
+	sf::Vector2f myPos = GetPosition();
+	sf::Vector2f playerPos = target->GetPosition();
+	sf::Vector2f newPos = myPos;
+
+	// LMJ: for exact location of the windown boundary
+	float leftBound = playerPos.x - windowSize.x * 0.5f;
+	float rightBound = playerPos.x + windowSize.x * 0.5f;
+	float topBound = playerPos.y - windowSize.y * 0.5f;
+	float bottomBound = playerPos.y + windowSize.y * 0.5f;
+
+	float spawnMargin = 150.0f; // LMJ: adjustment for the margins
+
+	if (myPos.x < leftBound - wraparoundBuffer)
+	{
+		newPos.x = rightBound + spawnMargin; // LMJ: Left -> Right
+	}
+	else if (myPos.x > rightBound + wraparoundBuffer)
+	{
+		newPos.x = leftBound - spawnMargin; // LMJ: Right -> Left
+	}
+
+	if (myPos.y < topBound - wraparoundBuffer)
+	{
+		newPos.y = bottomBound + spawnMargin; // LMJ: Top -> Bottom
+	}
+	else if (myPos.y > bottomBound + wraparoundBuffer)
+	{
+		newPos.y = topBound - spawnMargin; // LMJ: Bottom -> Top
+	}
+	return newPos;
+}
+
+bool Enemy::ShouldWrapAround() const // LMJ: if player is active, and is shown in the screen
+{
+	if (!target || !isNotShown) return false;
+
+	float distance = Utils::Distance(GetPosition(), target->GetPosition());
+	sf::Vector2f windowSize = FRAMEWORK.GetWindowSizeF();
+	float safeDistance = Utils::Magnitude(windowSize) * 1.2f;
+
+	return distance > safeDistance;
 }
 
 sf::FloatRect Enemy::GetLocalBounds() const

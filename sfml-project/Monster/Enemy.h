@@ -11,8 +11,12 @@ private:
     void UpdateAnimation();
     void OnDeathAnimationComplete() { SetActive(false); }
 
-    // LMJ: 몬스터 겹침 방지 시스템
+    // LMJ: collision avoid
     sf::Vector2f CalculateAvoidanceForce();
+
+    // LMJ: teleport system
+    bool isNotShown = true;
+    float wraparoundBuffer = 100.f;
 
 protected:
     sf::Sprite sprite;
@@ -89,4 +93,13 @@ public:
     void SetSpawnerReference(MonsterSpawner* spawner) { spawnerRef = spawner; }
     void SetAvoidanceRadius(float radius) { avoidanceRadius = radius; }
     void SetAvoidanceForce(float force) { avoidanceForceMultiplier = force; }
+
+    // LMJ: Teleport System
+    void UpdateWraparoundStatus();
+    void HandleWraparound();
+    bool IsOnScreen() const;
+    sf::Vector2f GetWraparoundPosition() const;
+    bool ShouldWrapAround() const;
+    bool IsShown() const { return !isNotShown; }
+    bool IsNotShown() const { return isNotShown; }
 };
