@@ -89,7 +89,7 @@ private:
     float lastWaveCheckTime = 0.f;
 
     float monsterUpdateTimer = 0.f;
-    float monsterUpdateInterval = 1.0f; // LMJ: 1초마다 정리 작업
+    float monsterUpdateInterval = 1.0f;
 
     float wraparoundMargin = 150.f;
     float wraparoundCheckInterval = 0.5f;
@@ -101,8 +101,6 @@ private:
     Enemy* CreateMonsterFromType(MonsterType type, const sf::Vector2f& position);
     void ApplyDifficultyToMonster(Enemy* monster);
     MonsterType SelectRandomMonsterType() const;
-    void CleanupDestroyedMonsters();
-    void ProcessWaveSpawning(float dt);
     void ShowWaveMessage(const std::string& message);
 
     // LMJ: 이 함수들이 private에 있어야 합니다
@@ -158,4 +156,6 @@ public:
     void CheckMonsterWraparound(float dt);
     void WrapAroundMonster(Enemy* monster, const sf::Vector2f& playerPos, const sf::Vector2f& windowSize);
     sf::Vector2f GetBetterWraparoundPosition(const sf::Vector2f& monsterPos, const sf::Vector2f& playerPos, const sf::Vector2f& windowSize);
+
+    void SetCurrentScene(Scene* scene) { currentScene = scene; }
 };

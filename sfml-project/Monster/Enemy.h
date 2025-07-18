@@ -21,10 +21,12 @@ private:
     float offScreenTime = 0.0f;
     float wraparoundDelay = 2.0f;
 
+    Scene* currentScene = nullptr;
+
 protected:
     sf::Sprite sprite;
     Animator animator;
-    sf::Vector2f velocity{};
+    sf::Vector2f velocity{};   
 
     float speed = 100.0f;
     int hp = 50;
@@ -104,4 +106,8 @@ public:
     bool ShouldWrapAround() const;
     bool IsShown() const { return !isNotShown; }
     bool IsNotShown() const { return isNotShown; }
+
+    // LMJ: Drop EXP system
+    void DropExpOrb();
+    void SetCurrentScene(Scene* scene) { currentScene = scene; }
 };

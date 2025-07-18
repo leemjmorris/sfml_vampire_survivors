@@ -140,6 +140,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ExpOrb.cpp" />
     <ClCompile Include="Monster\Enemy.cpp" />
     <ClCompile Include="Framework\AnimationClip.cpp" />
     <ClCompile Include="Framework\Animator.cpp" />
@@ -165,6 +166,7 @@
     <ClCompile Include="Weapon\WeaponMgr.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ExpOrb.h" />
     <ClInclude Include="Monster\Enemy.h" />
     <ClInclude Include="Framework\AnimationClip.h" />
     <ClInclude Include="Framework\Animator.h" />

@@ -187,6 +187,11 @@ void MonsterSpawner::SpawnMonster(MonsterType type, const sf::Vector2f& position
     Enemy* monster = CreateMonsterFromType(type, position);
     if (!monster) return;
 
+    // LMJ: monster reference to be used with gems
+    monster->SetTarget(targetPlayer);
+    monster->SetSpawnerReference(this);
+    monster->SetCurrentScene(currentScene);
+
     // LMJ: Apply difficulty scaling
     ApplyDifficultyToMonster(monster);
 

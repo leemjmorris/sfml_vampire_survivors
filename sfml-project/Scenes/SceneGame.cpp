@@ -35,6 +35,7 @@ void SceneGame::Init()
     texIds.push_back("graphics/skeleton6_death.png");
     texIds.push_back("graphics/background_forest.png");
     texIds.push_back("graphics/Knife.png");
+    texIds.push_back("graphics/Gem1.png");
 
     fontIds.push_back("fonts/DS-DIGIT.ttf");
 
@@ -138,6 +139,7 @@ void SceneGame::Enter()
         monsterSpawner->SetMaxMonsters(500);
         monsterSpawner->SetSpawnDistance(600.0f);
         monsterSpawner->SetBaseSpawnInterval(0.f);
+        monsterSpawner->SetCurrentScene(this);
     }
 
     // LMJ: Reset game state

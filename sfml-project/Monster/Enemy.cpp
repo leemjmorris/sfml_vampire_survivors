@@ -4,6 +4,7 @@
 #include "Animator.h"
 #include "AnimationClip.h"
 #include "MonsterSpawner.h"
+#include "ExpOrb.h"
 
 Enemy::Enemy(const std::string& name) : GameObject(name)
 {
@@ -169,54 +170,64 @@ void Enemy::TakeDamage(int damage)
 
 	if (hp <= 0)
 	{
-		isDead = true;
+		if (isDead) return;
+
+		hp -= damage;
+		if (hp < 0) hp = 0;
+
+		// LMJ: Visual feedback for taking damage
+		sprite.setColor(sf::Color::Red);
+		// Reset color immediately (you might want to add a timer for this)
 		sprite.setColor(sf::Color::White);
 
-		if (hitBox) hitBox->SetActive(false);
-
-		// LMJ: Give experience to player when enemy dies
-		if (target)
+		if (hp <= 0)
 		{
-			target->GainExperience(expValue);
-		}
+			isDead = true;
+			sprite.setColor(sf::Color::White);
 
-		std::string deathClip = "";
-		std::string enemyName = GetName();
+			if (hitBox) hitBox->SetActive(false);
 
-		if (enemyName == "Bat1") deathClip = "animations/bat1_death.csv";
-		else if (enemyName == "Ghoul1") deathClip = "animations/ghoul1_death.csv";
-		else if (enemyName == "Ghoul2") deathClip = "animations/ghoul2_death.csv";
-		else if (enemyName == "Ghoul3") deathClip = "animations/ghoul3_death.csv";
-		else if (enemyName == "Skeleton1") deathClip = "animations/skeleton1_death.csv";
-		else if (enemyName == "Skeleton2") deathClip = "animations/skeleton2_death.csv";
-		else if (enemyName == "Skeleton3") deathClip = "animations/skeleton3_death.csv";
-		else if (enemyName == "Skeleton4") deathClip = "animations/skeleton4_death.csv";
-		else if (enemyName == "Skeleton5") deathClip = "animations/skeleton5_death.csv";
-		else if (enemyName == "Skeleton6") deathClip = "animations/skeleton6_death.csv";
-		else deathClip = "animations/bat1_death.csv";
+			// LMJ: Drop experience orb instead of giving experience directly
+			DropExpOrb();
 
-		if (ANI_CLIP_MGR.Exists(deathClip))
-		{
-			std::cout << "Playing death animation: " << deathClip << " for " << enemyName << std::endl;
+			std::string deathClip = "";
+			std::string enemyName = GetName();
 
-			// LMJ: Clear events and add death event
-			animator.ClearEvent();
+			if (enemyName == "Bat1") deathClip = "animations/bat1_death.csv";
+			else if (enemyName == "Ghoul1") deathClip = "animations/ghoul1_death.csv";
+			else if (enemyName == "Ghoul2") deathClip = "animations/ghoul2_death.csv";
+			else if (enemyName == "Ghoul3") deathClip = "animations/ghoul3_death.csv";
+			else if (enemyName == "Skeleton1") deathClip = "animations/skeleton1_death.csv";
+			else if (enemyName == "Skeleton2") deathClip = "animations/skeleton2_death.csv";
+			else if (enemyName == "Skeleton3") deathClip = "animations/skeleton3_death.csv";
+			else if (enemyName == "Skeleton4") deathClip = "animations/skeleton4_death.csv";
+			else if (enemyName == "Skeleton5") deathClip = "animations/skeleton5_death.csv";
+			else if (enemyName == "Skeleton6") deathClip = "animations/skeleton6_death.csv";
+			else deathClip = "animations/bat1_death.csv";
 
-			animator.AddEvent(deathClip, 14, [this]() {
+			if (ANI_CLIP_MGR.Exists(deathClip))
+			{
+				std::cout << "Playing death animation: " << deathClip << " for " << enemyName << std::endl;
+
+				// LMJ: Clear events and add death event
+				animator.ClearEvent();
+
+				animator.AddEvent(deathClip, 14, [this]() {
+					OnDeathAnimationComplete();
+					SetActive(false);
+					});
+
+				animator.Play(deathClip);
+			}
+			else
+			{
+				std::cout << "Death animation not found: " << deathClip << " for " << enemyName << std::endl;
 				OnDeathAnimationComplete();
 				SetActive(false);
-				});
+			}
 
-			animator.Play(deathClip);
+			std::cout << "Enemy dead, exp orb dropped: " << expValue << std::endl;
 		}
-		else
-		{
-			std::cout << "Death animation not found: " << deathClip << " for " << enemyName << std::endl;
-			OnDeathAnimationComplete();
-			SetActive(false);
-		}
-
-		std::cout << "Enemy dead, exp given: " << expValue << std::endl;
 	}
 }
 
@@ -293,6 +304,25 @@ sf::Vector2f Enemy::CalculateAvoidanceForce()
 	}
 
 	return avoidanceForce;
+}
+
+void Enemy::DropExpOrb()
+{
+	if (!currentScene) return;
+
+	// LMJ: Create experience orb at enemy position
+	ExpOrb* expOrb = new ExpOrb("ExpOrb");
+	expOrb->SetExpValue(expValue);
+	expOrb->SetPosition(position);
+	expOrb->SetTarget(target); // LMJ: Set player as target for attraction
+
+	expOrb->Init();
+	expOrb->Reset();
+
+	// LMJ: Add to scene
+	currentScene->AddGameObject(expOrb);
+
+	std::cout << "Dropped exp orb with value: " << expValue << std::endl;
 }
 
 void Enemy::SetPosition(const sf::Vector2f& pos)
@@ -499,8 +529,6 @@ bool Enemy::ShouldWrapAround() const // LMJ: if player is active, and is shown i
 
 	return distance > maxDistance;
 }
-
-
 
 sf::FloatRect Enemy::GetLocalBounds() const
 {

@@ -35,3 +35,4 @@
 #include "Monster/Enemy.h"
 #include "Monster/MonsterSpawner.h"
 #include "Weapon/WeaponMgr.h"
+#include "ExpOrb.h"
