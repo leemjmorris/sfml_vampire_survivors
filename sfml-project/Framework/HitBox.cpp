@@ -8,10 +8,6 @@
 std::vector<HitBox*> CollisionManager::allHitBoxes;
 bool CollisionManager::debugDraw = false;
 
-// ============================================================================
-// HitBox Implementation
-// ============================================================================
-
 HitBox::HitBox(GameObject* owner, HitBoxType type)
     : owner(owner), type(type), active(true), radius(0.0f), useCircularCollision(false),
     offset(0, 0), debugColor(sf::Color::White)
@@ -61,7 +57,6 @@ void HitBox::RemoveCollisionLayer(HitBoxType layer)
         collisionLayers.erase(it);
     }
 }
-
 void HitBox::ClearCollisionLayers()
 {
     collisionLayers.clear();
@@ -173,10 +168,6 @@ bool HitBox::CheckMixedCollision(const HitBox& other) const
 
     return distance <= circle->radius;
 }
-
-// ============================================================================
-// CollisionManager Implementation
-// ============================================================================
 
 void CollisionManager::RegisterHitBox(HitBox* hitBox)
 {
