@@ -1,7 +1,8 @@
-ID,FPS,LoopType (0: Single,1: Loop)
-Skeleton2_run,10,1
+ID,FPS,LoopType (0: Single,1: Loop),,,
+Skeleton2_run,10,1,,,,
+,,,,,,
 TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT,FLIPX (0:False,1:True)
-graphics/skeleton2_run.png,0,0,33,33,0
-graphics/skeleton2_run.png,33,0,33,33,0
-graphics/skeleton2_run.png,66,0,33,33,0
-graphics/skeleton2_run.png,99,0,33,33,0
+graphics/skeleton2_run.png,0,0,33,33,0,
+graphics/skeleton2_run.png,33,0,33,33,0,
+graphics/skeleton2_run.png,66,0,33,33,0,
+graphics/skeleton2_run.png,99,0,33,33,0,
