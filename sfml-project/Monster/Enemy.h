@@ -17,6 +17,9 @@ private:
     // LMJ: teleport system
     bool isNotShown = true;
     float wraparoundBuffer = 100.f;
+    bool wasOffScreen = false;
+    float offScreenTime = 0.0f;
+    float wraparoundDelay = 2.0f;
 
 protected:
     sf::Sprite sprite;
@@ -37,10 +40,9 @@ protected:
     EnemyHitBox* hitBox = nullptr;
     float hitBoxRadius = 20.f;
 
-    // LMJ: 몬스터 회피 시스템 관련 변수들
-    MonsterSpawner* spawnerRef = nullptr;  // MonsterSpawner 참조
-    float avoidanceRadius = 40.0f;         // 회피 감지 거리
-    float avoidanceForceMultiplier = 0.5f; // 회피력 강도
+    MonsterSpawner* spawnerRef = nullptr;
+    float avoidanceRadius = 40.0f;
+    float avoidanceForceMultiplier = 0.5f;
 
 public:
     Enemy(const std::string& name);

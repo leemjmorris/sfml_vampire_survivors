@@ -391,13 +391,17 @@ void Enemy::UpdateWraparoundStatus()
 
 	bool currentlyOnScreen = IsOnScreen();
 
-	if (currentlyOnScreen && isNotShown)
-	{
-		isNotShown = false;
-	}
-	else if (!currentlyOnScreen && isNotShown)
+	if (!currentlyOnScreen && !wasOffScreen)
 	{
 		isNotShown = true;
+		wasOffScreen = true;
+		offScreenTime = 0.0f;
+	}
+	else if (currentlyOnScreen)
+	{
+		isNotShown = false;
+		wasOffScreen = false;
+		offScreenTime = 0.0f;
 	}
 }
 
@@ -405,12 +409,21 @@ void Enemy::HandleWraparound()
 {
 	if (!ShouldWrapAround()) return;
 
-	sf::Vector2f currentPos = GetPosition();
-	sf::Vector2f wraparoundPos = GetWraparoundPosition();
-
-	if (Utils::Distance(currentPos, wraparoundPos) > 10.f)
+	if (isNotShown)
 	{
-		SetPosition(wraparoundPos);
+		offScreenTime += FRAMEWORK.GetDeltaTime();
+
+		if (offScreenTime >= wraparoundDelay)
+		{
+			sf::Vector2f wraparoundPos = GetWraparoundPosition();
+			SetPosition(wraparoundPos);
+
+			isNotShown = false;
+			wasOffScreen = false;
+			offScreenTime = 0.0f;
+
+			std::cout << "Monster wrapped around to: (" << wraparoundPos.x << ", " << wraparoundPos.y << ")" << std::endl;
+		}
 	}
 }
 
@@ -422,11 +435,13 @@ bool Enemy::IsOnScreen() const
 	sf::Vector2f myPos = GetPosition();
 	sf::Vector2f playerPos = target->GetPosition();
 
-	// LMJ: calculate window boundary based on player and buffer.
-	float leftBound = playerPos.x - windowSize.x * 0.5f - wraparoundBuffer;
-	float rightBound = playerPos.x + windowSize.x * 0.5f + wraparoundBuffer;
-	float topBound = playerPos.y - windowSize.y * 0.5f - wraparoundBuffer;
-	float bottomBound = playerPos.y + windowSize.y * 0.5f + wraparoundBuffer;
+	float screenWidth = windowSize.x;
+	float screenHeight = windowSize.y;
+
+	float leftBound = playerPos.x - screenWidth * 0.7f;   // LMJ: 70%
+	float rightBound = playerPos.x + screenWidth * 0.7f;
+	float topBound = playerPos.y - screenHeight * 0.7f;
+	float bottomBound = playerPos.y + screenHeight * 0.7f;
 
 	return (myPos.x >= leftBound && myPos.x <= rightBound &&
 		myPos.y >= topBound && myPos.y <= bottomBound);
@@ -434,38 +449,42 @@ bool Enemy::IsOnScreen() const
 
 sf::Vector2f Enemy::GetWraparoundPosition() const
 {
-	if (!target) return GetPosition(); // LMJ: no player, get position
+	if (!target) return GetPosition();
 
 	sf::Vector2f windowSize = FRAMEWORK.GetWindowSizeF();
 	sf::Vector2f myPos = GetPosition();
 	sf::Vector2f playerPos = target->GetPosition();
 	sf::Vector2f newPos = myPos;
 
-	// LMJ: for exact location of the windown boundary
 	float leftBound = playerPos.x - windowSize.x * 0.5f;
 	float rightBound = playerPos.x + windowSize.x * 0.5f;
 	float topBound = playerPos.y - windowSize.y * 0.5f;
 	float bottomBound = playerPos.y + windowSize.y * 0.5f;
 
-	float spawnMargin = 150.0f; // LMJ: adjustment for the margins
+	float spawnDistance = 100.0f;
 
 	if (myPos.x < leftBound - wraparoundBuffer)
 	{
-		newPos.x = rightBound + spawnMargin; // LMJ: Left -> Right
+		newPos.x = rightBound + spawnDistance;
+		newPos.y = playerPos.y + Utils::RandomRange(-windowSize.y * 0.3f, windowSize.y * 0.3f);
 	}
 	else if (myPos.x > rightBound + wraparoundBuffer)
 	{
-		newPos.x = leftBound - spawnMargin; // LMJ: Right -> Left
+		newPos.x = leftBound - spawnDistance;
+		newPos.y = playerPos.y + Utils::RandomRange(-windowSize.y * 0.3f, windowSize.y * 0.3f);
 	}
 
 	if (myPos.y < topBound - wraparoundBuffer)
 	{
-		newPos.y = bottomBound + spawnMargin; // LMJ: Top -> Bottom
+		newPos.y = bottomBound + spawnDistance;
+		newPos.x = playerPos.x + Utils::RandomRange(-windowSize.x * 0.3f, windowSize.x * 0.3f);
 	}
 	else if (myPos.y > bottomBound + wraparoundBuffer)
 	{
-		newPos.y = topBound - spawnMargin; // LMJ: Bottom -> Top
+		newPos.y = topBound - spawnDistance;
+		newPos.x = playerPos.x + Utils::RandomRange(-windowSize.x * 0.3f, windowSize.x * 0.3f);
 	}
+
 	return newPos;
 }
 
@@ -475,10 +494,13 @@ bool Enemy::ShouldWrapAround() const // LMJ: if player is active, and is shown i
 
 	float distance = Utils::Distance(GetPosition(), target->GetPosition());
 	sf::Vector2f windowSize = FRAMEWORK.GetWindowSizeF();
-	float safeDistance = Utils::Magnitude(windowSize) * 1.2f;
 
-	return distance > safeDistance;
+	float maxDistance = Utils::Magnitude(windowSize) * 1.5f;
+
+	return distance > maxDistance;
 }
+
+
 
 sf::FloatRect Enemy::GetLocalBounds() const
 {

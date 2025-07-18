@@ -157,5 +157,5 @@ public:
     // LMJ: Re-placing monsters
     void CheckMonsterWraparound(float dt);
     void WrapAroundMonster(Enemy* monster, const sf::Vector2f& playerPos, const sf::Vector2f& windowSize);
-    sf::Vector2f GetWraparoundPosition(const sf::Vector2f& monsterPos, const sf::Vector2f& playerPos, const sf::Vector2f& windowSize);
+    sf::Vector2f GetBetterWraparoundPosition(const sf::Vector2f& monsterPos, const sf::Vector2f& playerPos, const sf::Vector2f& windowSize);
 };
