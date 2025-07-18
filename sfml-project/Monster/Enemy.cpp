@@ -5,6 +5,7 @@
 #include "AnimationClip.h"
 #include "MonsterSpawner.h"
 #include "ExpOrb.h"
+#include "SceneGame.h"
 
 Enemy::Enemy(const std::string& name) : GameObject(name)
 {
@@ -310,6 +311,12 @@ void Enemy::DropExpOrb()
 {
 	if (!currentScene) return;
 
+	SceneGame* gameScene = dynamic_cast<SceneGame*>(currentScene);
+	if (!gameScene) return;
+
+	if (gameScene->expOrbCount >= 50) return;
+
+
 	// LMJ: Create experience orb at enemy position
 	ExpOrb* expOrb = new ExpOrb("ExpOrb");
 	expOrb->SetExpValue(expValue);
@@ -321,8 +328,7 @@ void Enemy::DropExpOrb()
 
 	// LMJ: Add to scene
 	currentScene->AddGameObject(expOrb);
-
-	std::cout << "Dropped exp orb with value: " << expValue << std::endl;
+	gameScene->expOrbCount++;
 }
 
 void Enemy::SetPosition(const sf::Vector2f& pos)

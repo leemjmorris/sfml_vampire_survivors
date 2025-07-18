@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ExpOrb.h"
 #include "Player.h"
+#include "SceneGame.h"
 
 ExpOrb::ExpOrb(const std::string& name) : GameObject(name)
 {
@@ -89,6 +90,11 @@ void ExpOrb::UpdateAttraction(float dt)
     if (distance < 20.0f) // LMJ: Distance check for exporb and player
     {
         target->GainExperience(expValue);
+        SceneGame* gameScene = dynamic_cast<SceneGame*>(SCENE_MGR.GetCurrentScene());
+        if (gameScene)
+        {
+            gameScene->expOrbCount--;
+        }
         SetActive(false);
         return;
     }

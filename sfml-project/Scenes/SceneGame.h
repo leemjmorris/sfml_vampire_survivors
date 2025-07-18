@@ -44,4 +44,7 @@ public:
 	void Exit() override;
 	void Update(float dt) override;
 	void Draw(sf::RenderWindow& window) override;
+
+	int expOrbCount = 0;
+	static const int MAX_EXP_ORBS = 50;
 };
