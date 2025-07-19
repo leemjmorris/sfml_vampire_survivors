@@ -120,81 +120,40 @@ void Player::Reset()
 
 void Player::Update(float dt)
 {
+	if (isDead && deathAnimationFinished) return;
+
 	if (invincibleTime > 0.f)
 	{
 		invincibleTime -= dt;
-
-		float alpha = (sin(invincibleTime * 20.f) + 1.f) * 0.5f;
-		sprite.setColor(sf::Color(255, 255, 255, (alpha * 255)));
-
-		if (hitBox) hitBox->SetActive(true);
-	}
-	else
-	{
-		sprite.setColor(sf::Color::White);
-
-		if (hitBox && isDead) hitBox->SetActive(true);
+		if (invincibleTime < 0.f) invincibleTime = 0.f;
 	}
 
-	HandleInput(dt);
-
-	// Use final move speed from stats
-	velocity = direction * GetFinalMoveSpeed();
-
-	// LMJ: 새 위치 계산
-	sf::Vector2f newPosition = position + velocity * dt;
-
-	// LMJ: 맵 경계 체크 및 위치 제한
-	CheckMapBoundaries(newPosition);
-
-	// Health recovery from stats
-	if (playerStats.recoveryBonus > 0.0f && currentHp < GetFinalMaxHP())
+	if (!isDead)
 	{
-		Heal(static_cast<int>(playerStats.recoveryBonus * dt));
+		sf::Vector2f newPosition = position + velocity * dt;
+
+		CheckMapBoundaries(newPosition);
+
+		SetPosition(newPosition);
 	}
 
 	UpdateAnimation();
 	animator.Update(dt);
 
-	if (hitBox)
+	if (hitBox && !isDead)
 	{
-		hitBox->UpdateTransform(sprite.getPosition());
-	}
-
-	// Update weapon manager with current stats
-	if (weaponMgr != nullptr)
-	{
-		weaponMgr->UpdatePlayerStats(playerStats);
+		hitBox->UpdateTransform(position);
 	}
 }
 
 void Player::CheckMapBoundaries(sf::Vector2f& newPosition)
 {
 	// LMJ: If map is set, check boundaries and clamp position
-	if (currentMap != nullptr)
+	if (!currentMap)
 	{
-		sf::Vector2f clampedPos = currentMap->ClampToMapBounds(newPosition, playerRadius);
-		position = clampedPos;
-		SetPosition(position);
+		return;
 	}
-	else
-	{
-		// LMJ: Window bounds as fallback
-		sf::Vector2f windowSize = FRAMEWORK.GetWindowSizeF();
-		sf::FloatRect bounds = GetGlobalBounds();
-
-		// LMJ: bound check based on size of sprite.
-		float halfWidth = bounds.width * 0.5f;
-		float halfHeight = bounds.height * 0.5f;
-
-		if (newPosition.x - halfWidth < 0) newPosition.x = halfWidth;
-		if (newPosition.x + halfWidth > windowSize.x) newPosition.x = windowSize.x - halfWidth;
-		if (newPosition.y - halfHeight < 0) newPosition.y = halfHeight;
-		if (newPosition.y + halfHeight > windowSize.y) newPosition.y = windowSize.y - halfHeight;
-
-		position = newPosition;
-		SetPosition(position);
-	}
+	newPosition = currentMap->ClampToMapBounds(newPosition, playerRadius);
 }
 
 void Player::HandleInput(float dir)
@@ -382,7 +341,6 @@ void Player::UpdateStats()
 	playerStats.invincibilityBonus = (level - 1) * 0.1f; // +0.1 sec invincibility per level
 }
 
-
 void Player::ApplyStatsToAttributes()
 {
 	// Update max HP based on health multiplier
@@ -426,7 +384,6 @@ void Player::ModifyStats(const PlayerStats& modification)
 
 	ApplyStatsToAttributes();
 }
-
 
 void Player::ResetStatsToBase()
 {

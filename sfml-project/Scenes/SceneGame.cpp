@@ -63,13 +63,13 @@ void SceneGame::Init()
     ANI_CLIP_MGR.Load("animations/skeleton6_run.csv");
     ANI_CLIP_MGR.Load("animations/skeleton6_death.csv");
 
-    // LMJ: Create player
-    player = new Player("Player");
-    AddGameObject(player);
-
     // LMJ: Create tiled map background
-    tiledMap = new TiledMap("graphics/background_forest.png", "ForestMap");
+    tiledMap = (TiledMap*)AddGameObject(new TiledMap("graphics/background_forest.png", "TiledMap"));
     AddGameObject(tiledMap);
+
+    // LMJ: Create player
+    player = (Player*)AddGameObject(new Player("Player"));
+    tiledMap->SetPlayer(player);
 
     // LMJ: Create weapon manager
     weaponManager = new WeaponMgr("WeaponManager");
@@ -125,6 +125,12 @@ void SceneGame::Enter()
         {
             player->SetCurrentMap(tiledMap);
         }
+    }
+
+    // LMJ: Player set position
+    if (player)
+    {
+        player->SetPosition(sf::Vector2f(0.0f, 0.0f)); // LMJ: 월드 원점에서 시작
     }
 
     // LMJ: Give player starting weapon
@@ -394,26 +400,8 @@ void SceneGame::CheckGameOver()
 
 void SceneGame::UpdateCameraWithBounds(const sf::Vector2f& playerPos)
 {
-    sf::Vector2f cameraPos = playerPos;
-    sf::Vector2f viewSize = worldView.getSize();
+    sf::Vector2f windowSize = FRAMEWORK.GetWindowSizeF();
 
-    // LMJ: Constrain camera to map bounds if available
-    if (mapBounds.width > 0 && mapBounds.height > 0)
-    {
-        float halfViewWidth = viewSize.x * 0.5f;
-        float halfViewHeight = viewSize.y * 0.5f;
-
-        // LMJ: Clamp camera position
-        if (cameraPos.x - halfViewWidth < mapBounds.left)
-            cameraPos.x = mapBounds.left + halfViewWidth;
-        else if (cameraPos.x + halfViewWidth > mapBounds.left + mapBounds.width)
-            cameraPos.x = mapBounds.left + mapBounds.width - halfViewWidth;
-
-        if (cameraPos.y - halfViewHeight < mapBounds.top)
-            cameraPos.y = mapBounds.top + halfViewHeight;
-        else if (cameraPos.y + halfViewHeight > mapBounds.top + mapBounds.height)
-            cameraPos.y = mapBounds.top + mapBounds.height - halfViewHeight;
-    }
-
-    worldView.setCenter(cameraPos);
+    worldView.setCenter(playerPos);
+    worldView.setSize(windowSize);
 }

@@ -427,40 +427,24 @@ void Enemy::UpdateWraparoundStatus()
 
 	bool currentlyOnScreen = IsOnScreen();
 
-	if (!currentlyOnScreen && !wasOffScreen)
+	if (!currentlyOnScreen)
 	{
-		isNotShown = true;
-		wasOffScreen = true;
-		offScreenTime = 0.0f;
-	}
-	else if (currentlyOnScreen)
-	{
-		isNotShown = false;
-		wasOffScreen = false;
-		offScreenTime = 0.0f;
+		float distance = Utils::Distance(GetPosition(), target->GetPosition());
+		sf::Vector2f windowSize = FRAMEWORK.GetWindowSizeF();
+		float maxDistance = Utils::Magnitude(windowSize) * 3.0f;
+
+		if (distance > maxDistance)
+		{
+			sf::Vector2f playerPos = target->GetPosition();
+			sf::Vector2f randomOffset = Utils::RandomOnUnitCircle() * Utils::RandomRange(300.0f, 500.0f);
+			SetPosition(playerPos + randomOffset);
+		}
 	}
 }
 
 void Enemy::HandleWraparound()
 {
-	if (!ShouldWrapAround()) return;
-
-	if (isNotShown)
-	{
-		offScreenTime += FRAMEWORK.GetDeltaTime();
-
-		if (offScreenTime >= wraparoundDelay)
-		{
-			sf::Vector2f wraparoundPos = GetWraparoundPosition();
-			SetPosition(wraparoundPos);
-
-			isNotShown = false;
-			wasOffScreen = false;
-			offScreenTime = 0.0f;
-
-			std::cout << "Monster wrapped around to: (" << wraparoundPos.x << ", " << wraparoundPos.y << ")" << std::endl;
-		}
-	}
+	return;
 }
 
 bool Enemy::IsOnScreen() const
@@ -474,10 +458,10 @@ bool Enemy::IsOnScreen() const
 	float screenWidth = windowSize.x;
 	float screenHeight = windowSize.y;
 
-	float leftBound = playerPos.x - screenWidth * 0.7f;   // LMJ: 70%
-	float rightBound = playerPos.x + screenWidth * 0.7f;
-	float topBound = playerPos.y - screenHeight * 0.7f;
-	float bottomBound = playerPos.y + screenHeight * 0.7f;
+	float leftBound = playerPos.x - screenWidth * 1.5f;
+	float rightBound = playerPos.x + screenWidth * 1.5f;
+	float topBound = playerPos.y - screenHeight * 1.5f;
+	float bottomBound = playerPos.y + screenHeight * 1.5f;
 
 	return (myPos.x >= leftBound && myPos.x <= rightBound &&
 		myPos.y >= topBound && myPos.y <= bottomBound);
@@ -526,14 +510,7 @@ sf::Vector2f Enemy::GetWraparoundPosition() const
 
 bool Enemy::ShouldWrapAround() const // LMJ: if player is active, and is shown in the screen
 {
-	if (!target || !isNotShown) return false;
-
-	float distance = Utils::Distance(GetPosition(), target->GetPosition());
-	sf::Vector2f windowSize = FRAMEWORK.GetWindowSizeF();
-
-	float maxDistance = Utils::Magnitude(windowSize) * 1.5f;
-
-	return distance > maxDistance;
+	return false;
 }
 
 sf::FloatRect Enemy::GetLocalBounds() const
