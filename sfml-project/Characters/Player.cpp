@@ -128,12 +128,28 @@ void Player::Update(float dt)
 		if (invincibleTime < 0.f) invincibleTime = 0.f;
 	}
 
+	if (invincibleTime >= 0.f)
+	{
+		invincibleTime -= dt;
+
+		constexpr float flashRate = 0.5f;
+		bool flashOn = std::fmod(invincibleTime, flashRate * 2.f) < flashRate;
+
+		sprite.setColor(sf::Color(255, 255, 255, flashOn ? 0 : 255));
+
+		if (invincibleTime <= 0.f)
+		{
+			invincibleTime = 0.f;
+			sprite.setColor(sf::Color::White);
+		}
+	}
+
 	if (!isDead)
 	{
+		HandleInput(dt);
+
 		sf::Vector2f newPosition = position + velocity * dt;
-
 		CheckMapBoundaries(newPosition);
-
 		SetPosition(newPosition);
 	}
 
@@ -156,7 +172,7 @@ void Player::CheckMapBoundaries(sf::Vector2f& newPosition)
 	newPosition = currentMap->ClampToMapBounds(newPosition, playerRadius);
 }
 
-void Player::HandleInput(float dir)
+void Player::HandleInput(float dt)
 {
 	direction = sf::Vector2f(0.f, 0.f);
 
@@ -186,6 +202,8 @@ void Player::HandleInput(float dir)
 	{
 		Utils::Normalize(direction);
 	}
+
+	velocity = direction * GetFinalMoveSpeed();
 }
 
 void Player::UpdateAnimation()
@@ -207,23 +225,6 @@ void Player::UpdateAnimation()
 	{
 		animator.SetSpeed(1.f);
 	}
-	// LMJ: Trying to fix this part.
-	//else if (direction.x == 0.f || direction.y == 0.f)
-	//{
-	//	if (isDead == false)
-	//	{
-	//		animator.SetSpeed(0.f);
-	//	}
-	//	else
-	//	{
-	//		animator.SetSpeed(1.f);
-	//	}
-	//}
-	// // LMJ: have to fix this part. it iterrupts death animations.
-	//else if (isDead == false)
-	//{
-	//	animator.SetSpeed(0.f);
-	//}
 
 	sf::Vector2f currentPos = GetPosition();
 
@@ -252,7 +253,6 @@ void Player::TakeDamage(int damage)
 	if (currentHp < 0) currentHp = 0;
 
 	invincibleTime = GetFinalInvincibilityDuration();
-	sprite.setColor(sf::Color::Red);
 
 	if (currentHp <= 0)
 	{

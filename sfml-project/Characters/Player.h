@@ -92,7 +92,7 @@ public:
     void Draw(sf::RenderWindow& window) override;
 
     void TakeDamage(int damage) override;
-    void HandleInput(float dir);
+    void HandleInput(float dt = 0.f);
 
     // LMJ: HitBox management
     PlayerHitBox* GetHitBox() const { return hitBox; }

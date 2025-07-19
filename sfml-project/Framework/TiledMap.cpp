@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "TiledMap.h"
 #include "Player.h"
+#include <cstdint>
 
 TiledMap::TiledMap(const std::string& textureId, const std::string& name)
     : GameObject(name), textureId(textureId), vertices(sf::Quads)
@@ -109,22 +110,22 @@ bool TiledMap::IsPlayerNearBoundary() const
 
 sf::Vector2i TiledMap::GetChunkCoordinates(const sf::Vector2f& worldPos) const
 {
-    float chunkWorldSize = CHUNK_SIZE * tileSize.x; // LMJ: Assuming square tiles
+    float chunkWidth = CHUNK_SIZE * tileSize.x;
+    float chunkHeight = CHUNK_SIZE * tileSize.y;
 
-    int chunkX = static_cast<int>(std::floor(worldPos.x / chunkWorldSize));
-    int chunkY = static_cast<int>(std::floor(worldPos.y / chunkWorldSize));
+    int chunkX = static_cast<int>(std::floor(worldPos.x / chunkWidth));
+    int chunkY = static_cast<int>(std::floor(worldPos.y / chunkHeight));
 
-    return sf::Vector2i(chunkX, chunkY);
+    return { chunkX, chunkY };
 }
 
 sf::Vector2f TiledMap::GetChunkWorldPosition(const sf::Vector2i& chunkCoord) const
 {
-    float chunkWorldSize = CHUNK_SIZE * tileSize.x;
+    float chunkWidth = CHUNK_SIZE * tileSize.x;
+    float chunkHeight = CHUNK_SIZE * tileSize.y;
 
-    return sf::Vector2f(
-        chunkCoord.x * chunkWorldSize,
-        chunkCoord.y * chunkWorldSize
-    );
+    return { chunkCoord.x * chunkWidth,
+             chunkCoord.y * chunkHeight };
 }
 
 void TiledMap::GenerateChunksAroundPlayer()
@@ -237,7 +238,11 @@ long long TiledMap::HashChunkCoord(const sf::Vector2i& coord) const
 {
     // LMJ: Simple hash function for chunk coordinates
     // LMJ: Combine x and y coordinates into a single hash
-    return (static_cast<long long>(coord.x) << 32) | static_cast<long long>(coord.y);
+
+    std::uint64_t ux = static_cast<std::uint32_t>(coord.x);
+    std::uint64_t uy = static_cast<std::uint32_t>(coord.y);
+
+    return (ux << 32) | uy;
 }
 
 std::vector<sf::Vector2i> TiledMap::GetChunksInRange(const sf::Vector2i& center, int range) const
