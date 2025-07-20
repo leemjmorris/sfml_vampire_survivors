@@ -1,9 +1,11 @@
 #include "stdafx.h"
 #include "SceneMgr.h"
 #include "SceneGame.h"
+#include "SceneTitle.h"
 
 void SceneMgr::Init()
 {
+	scenes.push_back(new SceneTitle());
 	scenes.push_back(new SceneGame());
 
 	for (auto scene : scenes)

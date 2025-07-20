@@ -48,5 +48,6 @@ public:
 	static bool GetMouseButton(sf::Mouse::Button key);
 
 	static sf::Vector2i GetMousePosition();
+	static bool AnyKeyDown();
 };
 

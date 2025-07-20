@@ -37,7 +37,7 @@ void SceneGame::Init()
     texIds.push_back("graphics/Knife.png");
     texIds.push_back("graphics/Gem1.png");
 
-    fontIds.push_back("fonts/DS-DIGIT.ttf");
+    fontIds.push_back("fonts/perfect.ttf");
 
     // LMJ: Load all animation clips
     ANI_CLIP_MGR.Load("animations/run.csv");
@@ -84,22 +84,22 @@ void SceneGame::Init()
     AddGameObject(monsterSpawner);
 
     // LMJ: Create UI elements
-    textHp = new TextGo("fonts/DS-DIGIT.ttf", "TextHp");
+    textHp = new TextGo("fonts/perfect.ttf", "TextHp");
     textHp->sortingLayer = SortingLayers::UI;
     textHp->sortingOrder = 100;
     AddGameObject(textHp);
 
-    textLevel = new TextGo("fonts/DS-DIGIT.ttf", "TextLevel");
+    textLevel = new TextGo("fonts/perfect.ttf", "TextLevel");
     textLevel->sortingLayer = SortingLayers::UI;
     textLevel->sortingOrder = 100;
     AddGameObject(textLevel);
 
-    textExp = new TextGo("fonts/DS-DIGIT.ttf", "TextExp");
+    textExp = new TextGo("fonts/perfect.ttf", "TextExp");
     textExp->sortingLayer = SortingLayers::UI;
     textExp->sortingOrder = 100;
     AddGameObject(textExp);
 
-    textTimer = new TextGo("fonts/DS-DIGIT.ttf", "TextTimer");
+    textTimer = new TextGo("fonts/perfect.ttf", "TextTimer");
     textTimer->sortingLayer = SortingLayers::UI;
     textTimer->sortingOrder = 100;
     AddGameObject(textTimer);
@@ -329,7 +329,7 @@ void SceneGame::UpdateUI(float dt)
         static TextGo* monsterCountText = nullptr;
         if (!monsterCountText)
         {
-            monsterCountText = new TextGo("fonts/DS-DIGIT.ttf", "MonsterCount");
+            monsterCountText = new TextGo("fonts/perfect.ttf", "MonsterCount");
             monsterCountText->sortingLayer = SortingLayers::UI;
             monsterCountText->sortingOrder = 100;
             AddGameObject(monsterCountText);
@@ -350,7 +350,7 @@ void SceneGame::UpdateUI(float dt)
         static TextGo* weaponInfoText = nullptr;
         if (!weaponInfoText)
         {
-            weaponInfoText = new TextGo("fonts/DS-DIGIT.ttf", "WeaponInfo");
+            weaponInfoText = new TextGo("fonts/perfect.ttf", "WeaponInfo");
             weaponInfoText->sortingLayer = SortingLayers::UI;
             weaponInfoText->sortingOrder = 100;
             AddGameObject(weaponInfoText);
@@ -369,7 +369,7 @@ void SceneGame::UpdateUI(float dt)
     static TextGo* debugKeysText = nullptr;
     if (!debugKeysText)
     {
-        debugKeysText = new TextGo("fonts/DS-DIGIT.ttf", "DebugKeys");
+        debugKeysText = new TextGo("fonts/perfect.ttf", "DebugKeys");
         debugKeysText->sortingLayer = SortingLayers::UI;
         debugKeysText->sortingOrder = 100;
         AddGameObject(debugKeysText);

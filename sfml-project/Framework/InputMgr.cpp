@@ -172,3 +172,14 @@ sf::Vector2i InputMgr::GetMousePosition()
 	return mousePosition; 
 }
 
+bool InputMgr::AnyKeyDown()
+{
+	for (int i = 0; i < sf::Keyboard::KeyCount; ++i)
+	{
+		if (GetKeyDown((sf::Keyboard::Key)i))
+		{
+			return true;
+		}
+	}
+	return GetMouseButtonDown(sf::Mouse::Left) || GetMouseButtonDown(sf::Mouse::Right);
+}
