@@ -46,11 +46,11 @@ void TiledMap::Reset()
         sf::Vector2u textureSize = TEXTURE_MGR.Get(textureId).getSize();
         tileSize = sf::Vector2f(static_cast<float>(textureSize.x), static_cast<float>(textureSize.y));
 
-        std::cout << "=== INFINITE MAP INITIALIZED ===" << std::endl;
-        std::cout << "Tile size: " << tileSize.x << "x" << tileSize.y << std::endl;
-        std::cout << "Chunk size: " << CHUNK_SIZE << "x" << CHUNK_SIZE << " tiles" << std::endl;
-        std::cout << "View distance: " << VIEW_DISTANCE << " chunks" << std::endl;
-        std::cout << "=================================" << std::endl;
+        //std::cout << "=== INFINITE MAP INITIALIZED ===" << std::endl;
+        //std::cout << "Tile size: " << tileSize.x << "x" << tileSize.y << std::endl;
+        //std::cout << "Chunk size: " << CHUNK_SIZE << "x" << CHUNK_SIZE << " tiles" << std::endl;
+        //std::cout << "View distance: " << VIEW_DISTANCE << " chunks" << std::endl;
+        //std::cout << "=================================" << std::endl;
 
         // LMJ: Generate initial chunks around origin
         currentPlayerChunk = sf::Vector2i(0, 0);

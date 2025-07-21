@@ -309,9 +309,9 @@ void Player::LevelUp()
 	// Heal to new max HP
 	currentHp = GetFinalMaxHP();
 
-	std::cout << "Level Up! New Level: " << level << std::endl;
-	std::cout << "New Max HP: " << GetFinalMaxHP() << std::endl;
-	std::cout << "New Move Speed: " << GetFinalMoveSpeed() << std::endl;
+	//std::cout << "Level Up! New Level: " << level << std::endl;
+	//std::cout << "New Max HP: " << GetFinalMaxHP() << std::endl;
+	//std::cout << "New Move Speed: " << GetFinalMoveSpeed() << std::endl;
 }
 
 void Player::UpdateStats()
